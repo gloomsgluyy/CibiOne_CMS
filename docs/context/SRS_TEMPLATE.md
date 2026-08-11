@@ -3,7 +3,7 @@
 > **Cara pakai**: Copy file ini ke `docs/srs/<halaman>/<section>.md`, isi semua bagian sebelum mulai coding. Baca `docs/context/AI_CONTEXT.md`, `architecture.md`, dan `glossary.md` dulu kalau belum familiar dengan istilah/rule di bawah.
 >
 > **Rule untuk AI agent yang mengerjakan SRS ini:**
-> 1. Cek Component Registry SEBELUM menulis kode UI. Kalau component/template section ini sudah ada di registry → HANYA implementasi, dilarang generate dari scratch.
+> 1. Cek Component Registry SEBELUM menulis kode UI. Kalau component/template section ini sudah ada di registry atau list component dari PIC → HANYA implementasi/adaptasi, dilarang generate dari scratch.
 > 2. Jangan mulai Fase 2 kalau Fase 1 belum berstatus **Done**.
 > 3. Jangan pernah set status jadi **Done** sendiri — AI paling jauh boleh set **Waiting for Approval**. Yang mengubah jadi Done adalah reviewer manusia.
 > 4. Kalau status sebelumnya **Rejected**, baca alasan reject dulu sebelum melanjutkan — jangan mulai ulang dari nol kecuali reviewer bilang begitu.
@@ -21,6 +21,7 @@
 | PIC Programmer | |
 | Reviewer / Approver | |
 | Component Registry Reference | *(link/nama entry di registry — WAJIB diisi sebelum Fase 1 mulai, kecuali sudah dikonfirmasi "tidak tersedia")* |
+| Code Reference Folder | *(contoh: `docs/references/<halaman>/<section>/` — wajib diisi kalau user/PIC pernah mengirim code reference di chat)* |
 | Tanggal dibuat | |
 
 ---
@@ -32,6 +33,7 @@
 - **Layout dari tim desain**: *(link Figma / gambar / referensi visual)*
 - **Deskripsi dari tim desain**: *(copy teks, behavior yang diharapkan, dsb)*
 - **Component/Template yang dipakai**: *(nama + sumber — WAJIB dari Component Registry kalau tersedia)*
+- **Code reference yang wajib diikuti**: *(folder/file di `docs/references/<halaman>/<section>/`; kalau ada, AI/programmer dilarang membuat UI dari scratch dan harus mengadaptasi reference tersebut)*
 - **Kalau component digenerate sendiri (registry tidak punya)**: jelaskan bagaimana cara menyeragamkan dengan komponen lain yang sudah ada di project *(warna, spacing, radius, dsb — rujuk `tailwind.config.ts`)*
 
 ### Execution Log — Fase 1

@@ -1,4 +1,4 @@
-# AI_CONTEXT.md — [NAMA_PROJECT] (SMKN 1 Cibinong — JHIC 2026)
+# AI_CONTEXT.md — [CibiOne CMS] (SMKN 1 Cibinong — JHIC 2026)
 
 > **Baca file ini duluan.** Ini adalah briefing single-source-of-truth untuk AI assistant mana pun (Claude, ChatGPT, Copilot, dll) yang mengerjakan codebase ini, di sesi chat manapun, oleh programmer manapun.
 > Last updated: 2026-08-11
@@ -57,10 +57,12 @@ Tim desain sudah menyediakan **Component Registry** (`docs/context/component-reg
 
 1. **Cek Component Registry dulu.** Apakah section ini punya component/template yang sudah ditentukan?
 2. **Kalau ADA** → tugas AI/programmer HANYA **mengimplementasikan/mengintegrasikan** component/template tersebut ke dalam project. **DILARANG KERAS** menulis ulang, "meningkatkan", atau membangun ulang dari nol versi sendiri — walaupun AI merasa bisa membuat versi yang "lebih bagus". Modifikasi yang diizinkan hanya: sesuaikan data/props, sesuaikan warna ke design token project, sesuaikan copy teks bahasa Indonesia.
-3. **Kalau TIDAK ADA di registry** → *baru* boleh generate sendiri, dengan syarat:
+3. **Kalau section/component ada di Component Registry atau daftar/list component dari user/PIC** → tugas AI/programmer wajib memakai entry tersebut. **Dilarang membuat UI dari scratch**, walaupun belum ada code lengkap, kecuali entry itu eksplisit ditandai "referensi saja" atau PIC/reviewer menyatakan registry tidak berlaku.
+4. **Kalau user/PIC mengirim code reference di chat** → simpan ke `docs/references/<halaman>/<section>/` dan tulis foldernya di SRS. Implementasi wajib mengadaptasi code reference tersebut. **Dilarang membuat UI dari scratch** selama code reference tersedia, kecuali PIC/reviewer eksplisit membatalkan reference itu.
+5. **Kalau TIDAK ADA di registry, TIDAK ADA list component, dan TIDAK ADA code reference** → *baru* boleh generate sendiri, dengan syarat:
    - Wajib menyeragamkan gaya (spacing, radius, warna, tipografi) dengan komponen lain yang sudah dipakai di halaman/project yang sama, ATAU
    - Ikuti instruksi spesifik tambahan dari tim desain/user.
-4. **Kalau ragu apakah sudah ada di registry atau belum** → tanya dulu ke user/PIC, jangan asumsi "belum ada" lalu langsung generate dari scratch.
+6. **Kalau ragu apakah sudah ada di registry/list/reference atau belum** → tanya dulu ke user/PIC, jangan asumsi "belum ada" lalu langsung generate dari scratch.
 
 > **Ini adalah rule paling sering dilanggar oleh AI coding assistant secara default** (kecenderungan alami AI adalah menulis semuanya dari nol). Programmer WAJIB menolak (Reject) hasil kerja AI yang melanggar rule ini di execution log, walau secara visual hasilnya bagus.
 
@@ -85,8 +87,9 @@ AI **tidak boleh** memutuskan sendiri sebuah section itu static atau dynamic kal
 1. Struktur folder ikut Next.js App Router convention — detail di `architecture.md`.
 2. Setiap resource dinamis (berita, guru, jurusan, dll) API route-nya ikut pattern `/api/{resource}` — **jangan bikin pattern baru per programmer.**
 3. Setiap section = satu file SRS di `docs/srs/<halaman>/<section>.md`, dibuat dari `docs/templates/SRS_TEMPLATE.md`. **Jangan mulai coding sebelum SRS-nya ada dan Fase 1-nya terisi.**
-4. Bahasa UI & konten = Bahasa Indonesia. Kode (variabel, komentar, commit message) = Bahasa Inggris.
-5. Commit message diprefix nama fase: `[Fase1]`, `[Fase2]`, `chore:`, `fix:`.
+4. Setiap code reference dari user/PIC wajib didokumentasikan di `docs/references/<halaman>/<section>/` dan dirujuk dari SRS section terkait.
+5. Bahasa UI & konten = Bahasa Indonesia. Kode (variabel, komentar, commit message) = Bahasa Inggris.
+6. Commit message diprefix nama fase: `[Fase1]`, `[Fase2]`, `chore:`, `fix:`.
 
 ---
 
@@ -102,7 +105,7 @@ AI **tidak boleh** memutuskan sendiri sebuah section itu static atau dynamic kal
 
 ## Things AI Should NEVER Do
 
-1. **Menulis UI dari scratch** kalau component/template-nya sudah ada di Component Registry (lihat Strict Rule #1).
+1. **Menulis UI dari scratch** kalau component/template-nya sudah ada di Component Registry atau code reference section sudah tersedia (lihat Strict Rule #1).
 2. **Menandai status SRS sendiri jadi "Done".** Status "Done" hanya boleh diubah oleh reviewer/PIC programming setelah approve — AI hanya boleh mengajukan "Waiting for Approval".
 3. **Mulai Fase 2 (backend logic)** sebelum Fase 1 section itu berstatus **Done**.
 4. **Menyimpan gambar sebagai base64 di database.** Selalu pakai object storage (Vercel Blob).

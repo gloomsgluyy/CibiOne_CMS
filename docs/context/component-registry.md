@@ -1,7 +1,7 @@
 # Component & Template Registry — [NAMA_PROJECT]
 
 > Last updated: 2026-08-11 — diisi dari data lengkap tim desain.
-> **Ini file hidup.** Tim desain nambah entry di sini kapan saja mereka riset komponen baru — bukan cuma sekali di awal. AI/programmer **wajib cek file ini duluan** sebelum menulis kode UI section manapun (lihat Strict Rule #1 di `AI_CONTEXT.md`).
+> **Ini file hidup.** Tim desain nambah entry di sini kapan saja mereka riset komponen baru — bukan cuma sekali di awal. AI/programmer **wajib cek file ini duluan** sebelum menulis kode UI section manapun (lihat Strict Rule #1 di `AI_CONTEXT.md`). Kalau section/component ada di registry atau list component dari PIC, implementasi **wajib memakai/adaptasi entry tersebut** dan **dilarang membuat UI dari scratch**, kecuali entry eksplisit ditandai referensi saja atau PIC/reviewer membatalkan.
 >
 > **Ini bukan cuma kumpulan component kecil.** Ada 3 jenis entry di sini — kolom **Tipe** menandai bedanya:
 > - **Component** — potongan UI siap pakai (kode di-copy, sesuaikan data & token warna).
