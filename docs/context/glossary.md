@@ -10,7 +10,9 @@
 |---|---|
 | **Section** | Satu blok konten di dalam halaman (contoh: "Hero Banner" adalah section di Halaman Home). Unit kerja terkecil yang punya SRS sendiri. |
 | **Jurusan** | Kompetensi keahlian di SMKN 1 Cibinong (contoh: SIJA, TKJ). Punya admin sendiri (`jurusan_admin`) dan bisa punya landing page terpisah. |
-| **Component Registry** | Daftar section → component/template spesifik dari library (shadcn/ui, Magic UI, Hero UI, Aurora, Cult UI, dll) yang dikurasi tim desain. Sumber kebenaran untuk Strict Rule #1. |
+| **Component Registry** | Daftar section → component/template/layout spesifik (`docs/context/component-registry.md`), dari berbagai sumber (Cult UI, UI Layouts, Magic UI, Aura Build, dll — tidak dibatasi 1-2 library). Sumber kebenaran untuk Strict Rule #1. |
+| **Template Reference** | Entry di Component Registry berupa contoh halaman/dashboard PENUH (bukan 1 component), misal template admin dari Preline/TailAdmin/Flowbite. Kalau ditandai "referensi saja" (biasanya karena premium/berlisensi), dipakai sebagai acuan pattern/struktur, bukan di-copy verbatim. |
+| **Layout Pattern** | Entry di Component Registry berupa pola susunan/grid (misal masonry grid), bukan 1 elemen visual spesifik. |
 | **Static Content** | Konten yang tidak bisa diubah lewat CMS/admin — hardcode di kode. |
 | **Dynamic Content – List** | Konten yang bisa CRUD (create/read/update/delete), jumlahnya banyak/berulang (contoh: daftar berita, daftar guru). |
 | **Dynamic Content – Singleton** | Konten yang bisa diedit tapi cuma satu value per key, bukan list (contoh: nomor WhatsApp). |

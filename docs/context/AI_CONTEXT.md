@@ -31,8 +31,8 @@ Setiap section (lihat `project.md` untuk daftar lengkap) dikerjakan sebagai **sa
 |---|---|---|
 | Framework | **Next.js 15 (App Router)**, TypeScript | SSR/SSG untuk SEO halaman publik (berita, prestasi), API routes built-in = satu deploy, jalan native di Vercel |
 | Styling & Component Base | **Tailwind CSS + shadcn/ui** | Copy-paste, no vendor lock, jadi source-of-truth design token |
-| Component Extension | **Magic UI** (untuk hero/animasi/marketing block) | Dibangun di atas Tailwind + Radix yang sama seperti shadcn → visual konsisten |
-| Component Fallback | **Hero UI** — hanya kalau benar-benar tidak ada equivalent | Punya theming system sendiri → wajib direstyle biar seragam, lihat rule di bawah |
+| Component Sources | **Cult UI, UI Layouts, Magic UI, Aura Build**, dan sumber lain yang dikurasi tim desain — **tidak dibatasi ke 1-2 library** | Daftar aktual dengan link per section ada di `docs/context/component-registry.md` — itu rujukan sebenarnya, bukan tabel ini |
+| Component Base (generic) | **shadcn/ui** — dipakai untuk primitives yang tidak dicover sumber manapun (button, input, table, dialog) | Bukan "base design system" tunggal, cuma fallback generik |
 | Data fetching (public) | Next.js Server Components — fetch langsung di server | Paling cepat, tanpa JS client tambahan, bagus untuk SEO |
 | Data fetching (admin/CMS) | **TanStack Query** | Caching, mutation, optimistic UI untuk dashboard admin yang interaktif |
 | ORM & DB | **Drizzle ORM + PostgreSQL** | Ringan, cold-start cepat (cocok serverless/Vercel), type-safe |
@@ -46,7 +46,12 @@ Repo saat ini **belum ada scaffold** — ini masih greenfield. Programmer pertam
 
 ## 🔒 STRICT RULE #1 — Component & Template Reuse (WAJIB DIIKUTI TANPA KECUALI)
 
-Tim desain sudah menyediakan **Component Registry** — daftar section → component/template spesifik (dari shadcn/ui, Magic UI, Hero UI, Aurora, Cult UI, dll) yang wajib dipakai. Registry ini hidup di luar file ini (dikelola tim desain) dan harus dicek **sebelum** menulis kode UI apapun.
+Tim desain sudah menyediakan **Component Registry** (`docs/context/component-registry.md`) — daftar section → component/template/layout spesifik. **Sumbernya beragam dan tidak terbatas ke satu-dua library** — sejauh ini sudah ada entry dari Cult UI, UI Layouts, Magic UI, dan Aura Build. **Jangan pernah berasumsi komponen cuma datang dari library tertentu** — cek daftar aktual di `docs/context/component-registry.md` (file hidup, terus bertambah) sebelum menulis kode UI apapun.
+
+**Registry ini bukan cuma potongan component kecil.** Ada 3 jenis entry (lihat kolom "Tipe" di `component-registry.md`):
+- **Component** — potongan UI siap pakai, di-copy langsung.
+- **Layout Pattern** — pola susunan/grid, bukan 1 elemen visual.
+- **Template Reference** — contoh halaman/dashboard PENUH dari situs lain (misal template admin dashboard). Untuk tipe ini, cek kolom "Cara Pakai": kalau ditandai **"Referensi struktur/visual saja"** (misal karena premium/berlisensi seperti Preline CMS Admin), tugas AI adalah **membangun ulang mengikuti pattern/struktur yang terlihat** — ini BUKAN pelanggaran rule "dilarang scratch", karena template itu sendiri memang tidak boleh di-copy verbatim. Kalau ditandai "Implementasi langsung", perlakukan seperti Component biasa di poin 2 di bawah.
 
 **Alur wajib untuk setiap section:**
 
@@ -116,5 +121,5 @@ AI **tidak boleh** memutuskan sendiri sebuah section itu static atau dynamic kal
 | 4 | `docs/context/decisions.md` | Alasan tiap keputusan teknis (ADR) |
 | 5 | `docs/context/glossary.md` | Istilah baku supaya semua orang/AI pakai kata yang sama |
 | 6 | `docs/templates/SRS_TEMPLATE.md` | Template wajib untuk tiap SRS section |
-| 7 | Component Registry (dikelola tim desain — link/lokasi diisi tim) | Daftar component/template per section |
+| 7 | `docs/context/component-registry.md` | Daftar aktual component/template per section, dengan link — **ini yang dicek, bukan asumsi dari technology stack table di atas** |
 | 8 | `docs/srs/<halaman>/<section>.md` | SRS spesifik section yang sedang dikerjakan |

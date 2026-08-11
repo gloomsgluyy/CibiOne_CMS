@@ -184,14 +184,17 @@ Helper-nya ditaruh di `lib/api-response.ts` — semua route handler **wajib** pa
 
 ## Component Layering Rule (teknis dari Strict Rule #1 di `AI_CONTEXT.md`)
 
-Urutan prioritas sumber komponen:
+**Sumber component TIDAK dibatasi ke 1-2 library tertentu.** Daftar aktual (dengan link per section) ada di `docs/context/component-registry.md` — file itu satu-satunya rujukan, jangan menebak dari tabel stack di `AI_CONTEXT.md`.
 
-1. **Component Registry tim desain** (cek dulu, selalu) — kalau ada, pakai apa adanya.
-2. **shadcn/ui** — dasar semua elemen generik (button, card, form, table, dialog) kalau registry tidak menentukan komponen spesifik.
-3. **Magic UI** — untuk block marketing/animasi (hero, showcase karya, testimoni) yang tidak dicover shadcn.
-4. **Hero UI** — hanya kalau 1–3 tidak ada equivalent-nya. Wajib restyle warna/radius/spacing ikut token Tailwind project (`tailwind.config.ts`), jangan pakai theme bawaan Hero UI apa adanya.
+Urutan cek:
 
-Semua token warna/spacing/font didefinisikan **satu kali** di `tailwind.config.ts` berdasarkan brand kit tim desain (warna oranye/hitam dari identitas JHIC/sekolah) — komponen dari library manapun harus konsumsi token ini, bukan hardcode hex code sendiri-sendiri.
+1. **`component-registry.md`** — cek dulu, selalu, untuk section yang sedang dikerjakan. Kalau ada entry (dari sumber manapun — Cult UI, UI Layouts, Magic UI, Aura Build, atau sumber lain yang ditambahkan tim desain nanti), pakai apa adanya, **hanya implementasi**.
+2. Kalau section belum punya entry di registry → **shadcn/ui** dipakai sebagai basis untuk elemen generik (button, input, table, dialog) supaya tidak reinvent primitives dari nol.
+3. Kalau butuh block yang lebih spesifik dan tidak ada di registry maupun shadcn → boleh generate sendiri, **wajib** menyeragamkan dengan komponen lain yang sudah dipakai (lewat token, lihat bawah).
+
+Karena sumbernya sengaja beragam (Cult UI, UI Layouts, Magic UI, Aura Build masing-masing punya "rasa" styling sendiri), **konsistensi visual dijaga lewat token, bukan lewat memilih satu library favorit**: semua warna/spacing/radius/font didefinisikan **satu kali** di `tailwind.config.ts` berdasarkan brand kit tim desain (oranye/hitam, identitas JHIC/sekolah). Setiap component yang di-copy dari sumber manapun **wajib direstyle** supaya konsumsi token ini — jangan dipakai apa adanya dengan warna/spacing/font bawaan sumbernya.
+
+> Catatan khusus untuk entry dari **Aura Build**: situs ini memblokir automated access (robots disallowed), jadi AI coding assistant **tidak bisa** membuka/membaca isi halaman komponennya secara otomatis. Untuk entry Aura Build di registry, PIC/tim desain wajib **screenshot atau copy manual** kode komponennya ke SRS terkait sebelum AI mulai implementasi — jangan minta AI "buka link-nya sendiri".
 
 ---
 

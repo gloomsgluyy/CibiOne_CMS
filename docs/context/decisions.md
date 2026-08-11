@@ -16,13 +16,13 @@
 
 ---
 
-## ADR-002: shadcn/ui sebagai base design system, Magic UI sebagai extension, Hero UI sebagai fallback terakhir
+## ADR-002: Component Registry multi-sumber (Cult UI, UI Layouts, Magic UI, Aura Build, dll), shadcn/ui sebagai basis primitives, disatukan lewat Tailwind token
 
-- **Decision**: Prioritas komponen: (1) Component Registry tim desain, (2) shadcn/ui, (3) Magic UI, (4) Hero UI hanya kalau tidak ada pilihan lain.
-- **Alasan**: shadcn/ui bukan library ter-install, tapi kode yang di-copy ke project — jadi otomatis jadi "milik" project ini dan gampang di-theming lewat Tailwind token, tanpa vendor lock-in. Magic UI dibangun di atas fondasi yang sama (Tailwind + Radix) jadi visualnya nyambung natural untuk block marketing/animasi (hero, showcase). Hero UI (dulu NextUI) punya sistem theming sendiri yang terpisah dari Tailwind biasa — kalau dipakai bebas tanpa restyle, hasilnya kelihatan "nyampur" dan melanggar prinsip konsistensi visual yang diminta project ini.
-- **Alternatif dipertimbangkan**: Pakai satu library saja (misal Hero UI penuh) — lebih konsisten otomatis, tapi Component Registry tim desain sudah mereferensikan campuran dari beberapa sumber (Aurora, Cult UI, dll), jadi realistisnya tetap perlu strategi layering, bukan satu library eksklusif.
-- **Impact**: Semua warna/spacing/radius didefinisikan sekali di `tailwind.config.ts`; komponen dari sumber manapun wajib pakai token itu, bukan hex/style bawaan library asal.
-- **Status**: ✅ Active
+- **Decision**: Component/template project ini **boleh berasal dari banyak sumber sekaligus** — bukan satu design system eksklusif. Sejauh ini sudah terpakai: **Cult UI, UI Layouts, Magic UI, Aura Build**. Daftar lengkap + mapping ke section ada di `docs/context/component-registry.md`. **shadcn/ui** dipakai sebagai basis hanya untuk elemen generik (button, input, table) yang tidak ada assignment spesifik di registry.
+- **Alasan**: Tim desain riset & pilih komponen terbaik per section dari berbagai sumber sesuai kebutuhan visual masing-masing section (bukan dipaksa satu ekosistem) — pendekatan realistis untuk timeline lomba yang ketat. Konsekuensinya: konsistensi visual **tidak bisa** dijaga dengan cara "pilih 1 library favorit lalu jadikan itu satu-satunya sumber" (pendekatan awal yang salah di draf pertama file ini) — harus dijaga lewat token Tailwind yang seragam, apapun sumber komponennya.
+- **Alternatif dipertimbangkan**: Pakai satu design system eksklusif (misal shadcn/ui penuh untuk semuanya) — lebih konsisten otomatis tanpa perlu disiplin token, tapi membatasi/membuang riset visual yang sudah dilakukan tim desain dari beberapa sumber.
+- **Impact**: Setiap komponen yang di-copy dari sumber manapun **wajib direstyle** mengikuti token di `tailwind.config.ts`, bukan dipakai apa adanya dengan style bawaan sumbernya. `component-registry.md` adalah rujukan wajib untuk tahu "component ini dari mana" — bukan technology stack table di `AI_CONTEXT.md`.
+- **Status**: ✅ Active (direvisi 2026-08-11 setelah registry aktual diterima dari tim desain — versi awal ADR ini salah mengasumsikan sumber terbatas ke shadcn/Magic UI/Hero UI)
 
 ---
 
