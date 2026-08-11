@@ -1,0 +1,30 @@
+{
+  "name": "cibione-cms",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.85.0",
+    "drizzle-orm": "0.44.4",
+    "next": "15.5.23",
+    "postgres": "3.4.7",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "zod": "4.0.17"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1.11",
+    "@types/node": "24.2.1",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.7",
+    "drizzle-kit": "0.31.4",
+    "lightningcss-win32-x64-msvc": "^1.33.0",
+    "tailwindcss": "4.1.11",
+    "typescript": "5.9.2"
+  }
+}
