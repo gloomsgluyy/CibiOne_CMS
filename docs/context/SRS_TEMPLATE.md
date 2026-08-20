@@ -1,103 +1,131 @@
-# SRS Template — [NAMA_PROJECT]
+# Template SRS Section - [NAMA_PROJECT]
 
-> **Cara pakai**: Copy file ini ke `docs/srs/<halaman>/<section>.md`, isi semua bagian sebelum mulai coding. Baca `docs/context/AI_CONTEXT.md`, `architecture.md`, dan `glossary.md` dulu kalau belum familiar dengan istilah/rule di bawah.
+> Salin template ini ke `docs/srs/<halaman>/<nama-section>.md` sebelum coding. Baca `AI_CONTEXT.md`, `project.md`, `architecture.md`, `decisions.md`, `glossary.md`, dan `component-registry.md` terlebih dahulu.
 >
-> **Rule untuk AI agent yang mengerjakan SRS ini:**
-> 1. Cek Component Registry SEBELUM menulis kode UI. Kalau component/template section ini sudah ada di registry atau list component dari PIC → HANYA implementasi/adaptasi, dilarang generate dari scratch.
-> 2. Jangan mulai Fase 2 kalau Fase 1 belum berstatus **Done**.
-> 3. Jangan pernah set status jadi **Done** sendiri — AI paling jauh boleh set **Waiting for Approval**. Yang mengubah jadi Done adalah reviewer manusia.
-> 4. Kalau status sebelumnya **Rejected**, baca alasan reject dulu sebelum melanjutkan — jangan mulai ulang dari nol kecuali reviewer bilang begitu.
-> 5. Tiap ada progres, TAMBAH baris baru di Execution Log — jangan menimpa/menghapus baris lama.
+> Aturan wajib: PIC mengisi requirement dan execution log. Hanya reviewer manusia yang dapat mengubah status fase menjadi `Done`. Fase 2 hanya boleh dimulai setelah Fase 1 berstatus `Done`.
 
 ---
 
-## Metadata
+## 1. Metadata
 
 | Field | Isi |
 |---|---|
-| Halaman | *(contoh: Home)* |
-| Section | *(contoh: Hero Banner)* |
-| Tipe Konten | Static / Dynamic – List / Dynamic – Singleton / Functional *(pilih satu, lihat `glossary.md`)* |
-| PIC Programmer | |
-| Reviewer / Approver | |
-| Component Registry Reference | *(link/nama entry di registry — WAJIB diisi sebelum Fase 1 mulai, kecuali sudah dikonfirmasi "tidak tersedia")* |
-| Code Reference Folder | *(contoh: `docs/references/<halaman>/<section>/` — wajib diisi kalau user/PIC pernah mengirim code reference di chat)* |
-| Tanggal dibuat | |
+| Halaman | |
+| Section | |
+| Tipe konten | `Static` / `Dynamic - List` / `Dynamic - Singleton` / `Functional` |
+| Pattern data | `ContentList` / `SiteSetting` / `N/A` |
+| PIC programmer | |
+| Reviewer / approver | |
+| Issue / pull request | |
+| Tanggal dibuat | `YYYY-MM-DD` |
+| Status SRS | `Draft` / `In Progress` / `Waiting for Approval` / `Done` |
 
----
+## 2. Referensi Wajib
 
-## Fase 1 — Frontend Implementation
+| Referensi | Lokasi / tautan | Status |
+|---|---|---|
+| Layout atau brief desain | | |
+| Component Registry | `docs/context/component-registry.md` - tulis entry spesifik, atau `Tidak tersedia - dikonfirmasi oleh <nama/tanggal>` | |
+| Code reference dari PIC | `docs/references/<halaman>/<section>/` atau `Tidak ada` | |
+| Sumber konten | | |
+| ADR / konteks teknis terkait | | |
 
-### Input (diisi sebelum coding)
+> Jika registry atau code reference tersedia, UI wajib diadaptasi dari referensi tersebut. Jangan membuat pengganti dari nol.
 
-- **Layout dari tim desain**: *(link Figma / gambar / referensi visual)*
-- **Deskripsi dari tim desain**: *(copy teks, behavior yang diharapkan, dsb)*
-- **Component/Template yang dipakai**: *(nama + sumber — WAJIB dari Component Registry kalau tersedia)*
-- **Code reference yang wajib diikuti**: *(folder/file di `docs/references/<halaman>/<section>/`; kalau ada, AI/programmer dilarang membuat UI dari scratch dan harus mengadaptasi reference tersebut)*
-- **Kalau component digenerate sendiri (registry tidak punya)**: jelaskan bagaimana cara menyeragamkan dengan komponen lain yang sudah ada di project *(warna, spacing, radius, dsb — rujuk `tailwind.config.ts`)*
+## 3. Requirement
 
-### Execution Log — Fase 1
+### Tujuan
 
-| Tanggal | Dikerjakan oleh | Yang dikerjakan | Status | Catatan |
-|---|---|---|---|---|
-| | | | Not Started | |
+Jelaskan masalah pengguna dan hasil yang harus dicapai section ini dalam 2-4 kalimat.
 
-**Status Fase 1 saat ini**: `Not Started`
+### Konten dan perilaku
 
-> Kalau status = **Partial**, wajib isi: *"Sisa yang belum dikerjakan: ..."*
-> Kalau status = **Rejected**, wajib isi: *"Alasan ditolak: ..."*
-
----
-
-## Fase 2 — Backend Logic CMS
-
-> ⚠️ **Skip fase ini kalau Tipe Konten = Static.** Kalau di-skip, tulis: *"Tidak berlaku — konten Static."*
-> ⚠️ **Tidak boleh dimulai sebelum Fase 1 berstatus Done.**
-
-### Input
-
-- **Pattern yang dipakai**: `ContentList` / `SiteSetting` *(lihat `architecture.md`)*
-- **Nama tabel / field tambahan di luar skema generik**: 
-- **Endpoint API**: *(daftar route yang dibuat, ikut konvensi di `architecture.md`)*
-- **Role akses**: public read? `super_admin` only? `jurusan_admin` scoped?
-
-### Execution Log — Fase 2
-
-| Tanggal | Dikerjakan oleh | Yang dikerjakan | Status | Catatan |
-|---|---|---|---|---|
-| | | | Not Started | |
-
-**Status Fase 2 saat ini**: `Not Started`
-
----
-
-## Fase 3 — Khusus AI Integration (isi HANYA kalau section ini = AI Chatbot)
-
-> Lihat catatan arsitektur chatbot di `architecture.md` sebelum isi bagian ini.
-
-### Input
-
-- **Sumber knowledge base**: 
-- **Provider LLM**: 
-- **Approach**: context-stuffing / lainnya *(catat sebagai ADR baru di `decisions.md` kalau beda dari default)*
-
-### Execution Log — Fase 3
-
-| Tanggal | Dikerjakan oleh | Yang dikerjakan | Status | Catatan |
-|---|---|---|---|---|
-| | | | Not Started | |
-
-**Status Fase 3 saat ini**: `Not Started`
-
----
-
-## Approval Gate Summary
-
-| Fase | Status | Disetujui oleh | Tanggal approve |
+| Elemen | Requirement | Sumber data | Kriteria selesai |
 |---|---|---|---|
-| Fase 1 | Not Started | | |
-| Fase 2 | Not Started | | |
-| Fase 3 *(kalau berlaku)* | Not Started | | |
+| | | | |
 
-**Ringkasan status SRS ini**: 🔴 Belum mulai
-*(update jadi 🟡 In Progress / 🟠 Waiting for Approval / 🔴 Rejected / 🟢 Done sesuai fase yang aktif)*
+### Acceptance criteria
+
+- [ ] Tulis kriteria yang dapat diuji, termasuk tampilan desktop dan mobile bila berupa UI.
+- [ ] Tulis state kosong, loading, dan error bila memakai data dinamis.
+- [ ] Tulis aturan akses bila ada admin atau data privat.
+
+### Di luar scope
+
+- |
+
+## 4. Kontrak Data dan API
+
+> Isi untuk `Dynamic - List` atau `Dynamic - Singleton`. Untuk `Static` tulis `Tidak berlaku - konten static`.
+
+### Model data
+
+| Field | Tipe | Wajib | Aturan / contoh |
+|---|---|---|---|
+| | | | |
+
+### Endpoint
+
+| Method | Route | Tujuan | Akses | Request / query | Respons |
+|---|---|---|---|---|---|
+| | | | | | |
+
+### Validasi dan keamanan
+
+- Validasi Zod:
+- Aturan publish / urutan:
+- Role dan scope jurusan:
+- Penyimpanan berkas: URL Vercel Blob/S3, bukan base64 dalam database.
+
+## 5. Rencana Implementasi
+
+### Fase 1 - Frontend
+
+| Langkah | File terdampak | Bukti uji |
+|---|---|---|
+| | | |
+
+**Status Fase 1:** `Not Started`
+
+### Fase 2 - CMS / Backend
+
+> Lewati fase ini untuk konten `Static`. Jangan memulai sebelum Fase 1 diset `Done` oleh reviewer manusia.
+
+| Langkah | File terdampak | Bukti uji |
+|---|---|---|
+| | | |
+
+**Status Fase 2:** `Not Started`
+
+### Fase 3 - AI Integration
+
+> Isi hanya untuk section AI Chatbot; selain itu tulis `Tidak berlaku`.
+
+**Status Fase 3:** `N/A`
+
+## 6. Execution Log
+
+> Tambahkan baris baru setiap ada progres. Jangan menghapus riwayat. Status yang boleh dipakai: `Not Started`, `In Progress`, `Partial`, `Waiting for Approval`, `Rejected`, dan `Done` (reviewer manusia saja).
+
+| Tanggal | Fase | Pelaksana | Perubahan / hasil | Status | Catatan atau blocker |
+|---|---|---|---|---|---|
+| | | | | Not Started | |
+
+## 7. Pengujian dan Handover
+
+| Area | Cara uji | Hasil | Bukti / catatan |
+|---|---|---|---|
+| TypeScript / build | | | |
+| UI desktop dan mobile | | | |
+| API / validasi | | | |
+| Akses / otorisasi | | | |
+
+## 8. Approval Gate
+
+| Fase | Status | Disetujui oleh | Tanggal | Catatan review |
+|---|---|---|---|---|
+| Fase 1 | Not Started | | | |
+| Fase 2 | Not Started / N/A | | | |
+| Fase 3 | N/A | | | |
+
+**Ringkasan:** `Draft`

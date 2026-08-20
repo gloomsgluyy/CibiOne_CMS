@@ -2,14 +2,25 @@ import { boolean, integer, jsonb, pgEnum, pgTable, serial, text, timestamp } fro
 
 export const userRole = pgEnum("user_role", ["super_admin", "jurusan_admin"]);
 export const postType = pgEnum("post_type", ["berita", "pengumuman", "prestasi", "agenda"]);
+export const jurusanCategory = pgEnum("jurusan_category", ["IT", "Teknik"]);
 
 export const jurusan = pgTable("jurusan", {
   id: serial("id").primaryKey(),
-  title: text("title").notNull(),
+  code: text("code").notNull().unique(),
+  name: text("name").notNull(),
+  fullName: text("full_name").notNull(),
   slug: text("slug").notNull().unique(),
-  body: text("body"),
-  imageUrl: text("image_url"),
+  category: jurusanCategory("category").notNull(),
+  description: text("description").notNull(),
+  kompetensi: jsonb("kompetensi").$type<string[]>().notNull(),
+  fokusKeahlian: jsonb("fokus_keahlian").$type<Array<{ title: string; icon: string }>>().notNull(),
+  prospek: text("prospek").notNull(),
+  logoUrl: text("logo_url").notNull(),
+  bgImageUrl: text("bg_image_url"),
+  websiteUrl: text("website_url"),
+  isActive: boolean("is_active").notNull().default(true),
   isPublished: boolean("is_published").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
