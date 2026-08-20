@@ -90,3 +90,12 @@
 - **Alasan**: Tim desain sudah investasi waktu riset & kurasi component supaya hasil akhir visual konsisten dan cepat dibangun (memakai template teruji, bukan trial-error dari nol). Kalau AI bebas generate ulang, waktu riset itu sia-sia dan hasil akhir jadi tidak konsisten antar section yang dikerjakan orang/sesi berbeda.
 - **Impact**: Setiap SRS wajib mencantumkan referensi component/template yang dipakai di Fase 1 (lihat `SRS_TEMPLATE.md`) — kalau field itu kosong, Fase 1 tidak boleh dimulai.
 - **Status**: ✅ Active
+
+---
+
+## ADR-010: CMS content scope for Profil Sekolah and Berita
+
+- **Decision**: Visi/Misi dan Akreditasi menggunakan `SiteSetting` singleton. Guru & Staff, Sarana & Prasarana, serta Kerja Sama Industri menggunakan `ContentList`. Berita dan Prestasi tetap menggunakan tabel `posts` bersama, dengan master `post_categories`, ranking `view_count`, dan editorial flags untuk carousel/highlight.
+- **Alasan**: UI saat ini memiliki interaksi dan layout yang harus dipertahankan, tetapi kontennya perlu dikelola CMS. Pemisahan ini menghindari duplikasi tabel/endpoint, memberi super admin kontrol sekolah-wide, dan membatasi jurusan admin pada konten serta kategori jurusannya.
+- **Impact**: Category yang sudah dipakai tidak boleh hard-delete dan menjadi nonaktif. Slot bento untuk Sarana/Akreditasi disimpan sebagai enum semantic, bukan class Tailwind. Kontrak lengkap ada di `docs/planning/cms-content-and-collaboration.md`.
+- **Status**: ✅ Active (2026-08-20)
