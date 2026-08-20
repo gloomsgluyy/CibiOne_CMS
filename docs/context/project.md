@@ -1,4 +1,4 @@
-# Project Overview — [NAMA_PROJECT]
+# Project Overview — CIBIONE_CMS
 
 > Last updated: 2026-08-11
 
@@ -6,7 +6,7 @@
 
 ## Apa Ini?
 
-[NAMA_PROJECT] adalah CMS website sekolah untuk **SMKN 1 Cibinong**, dibuat untuk **Jagoan Hosting Innovation Competition (JHIC) 2026**. Bedanya dengan website sekolah biasa: pengelolaan kontennya **terdesentralisasi per jurusan** (tiap jurusan/kompetensi keahlian punya akses admin sendiri untuk update konten mereka, tanpa harus lewat satu admin pusat), dan dilengkapi **AI Chatbot** yang menjawab pertanyaan pengunjung berdasarkan basis pengetahuan spesifik tiap jurusan.
+CIBIONE_CMS adalah CMS website sekolah untuk **SMKN 1 Cibinong**, dibuat untuk **Jagoan Hosting Innovation Competition (JHIC) 2026**. Bedanya dengan website sekolah biasa: pengelolaan kontennya **terdesentralisasi per jurusan** (tiap jurusan/kompetensi keahlian punya akses admin sendiri untuk update konten mereka, tanpa harus lewat satu admin pusat), dan dilengkapi **AI Chatbot** yang menjawab pertanyaan pengunjung berdasarkan basis pengetahuan spesifik tiap jurusan.
 
 Masalah yang diselesaikan:
 - Update info jurusan lama makan waktu 3–7 hari kerja karena bottleneck di 1 admin pusat.
@@ -37,11 +37,11 @@ Masalah yang diselesaikan:
 | Section | Tipe Konten (usulan) | Catatan |
 |---|---|---|
 | Sejarah | Static | Hardcode, jarang/tidak pernah berubah |
-| Visi & Misi | Static | Hardcode |
+| Visi & Misi | Dynamic – Singleton | Editable oleh super admin; struktur accordion tetap di kode |
 | Struktur Organisasi | Dynamic – List | Berubah saat ada rotasi jabatan |
 | Guru & Staff | Dynamic – List | CRUD penuh, per jurusan bisa scoped |
 | Sarana Prasarana | Dynamic – List | CRUD, update tidak sering |
-| Akreditasi | Dynamic – Singleton | Update tiap beberapa tahun, tapi harus bisa diedit tanpa redeploy |
+| Akreditasi | Dynamic – Singleton | Admin mengisi card per slot bento tanpa mengubah layout |
 | Kerja Sama Industri | Dynamic – List | CRUD, sering bertambah |
 
 ### 3. Halaman Kompetensi Keahlian

@@ -8,7 +8,7 @@
 
 ## Project Summary
 
-[NAMA_PROJECT] adalah website CMS terdesentralisasi untuk SMKN 1 Cibinong, dibangun untuk kompetisi **Jagoan Hosting Innovation Competition (JHIC) 2026**. Tujuannya: menggantikan website sekolah lama yang lambat diupdate (1 admin pusat, 3–7 hari kerja per update) dengan sistem di mana **tiap jurusan punya kontrol mandiri** atas kontennya sendiri, plus **AI Chatbot** yang menjawab pertanyaan pengunjung 24/7 berdasarkan basis pengetahuan per jurusan.
+CIBIONE_CMS adalah website CMS terdesentralisasi untuk SMKN 1 Cibinong, dibangun untuk kompetisi **Jagoan Hosting Innovation Competition (JHIC) 2026**. Tujuannya: menggantikan website sekolah lama yang lambat diupdate (1 admin pusat, 3–7 hari kerja per update) dengan sistem di mana **tiap jurusan punya kontrol mandiri** atas kontennya sendiri, plus **AI Chatbot** yang menjawab pertanyaan pengunjung 24/7 berdasarkan basis pengetahuan per jurusan.
 
 Ini adalah **prototype/MVP untuk lomba**, dikerjakan lintas sesi "vibe coding" oleh 3 programmer berbeda secara paralel. File-file di `docs/context/` ini ada supaya siapapun (manusia atau AI agent) yang masuk ke sesi baru tetap mengikuti objektif, style, dan struktur data yang sama — **bukan reinvent pattern setiap kali dapat task baru.**
 
