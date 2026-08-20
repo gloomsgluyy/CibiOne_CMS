@@ -20,6 +20,19 @@ interface Jurusan {
   fokusKeahlian: Array<{ title: string; icon: string }>;
 }
 
+interface JurusanApiItem {
+  code: string;
+  name: string;
+  fullName: string;
+  description: string;
+  logoUrl: string;
+  category: "IT" | "Teknik";
+  bgImageUrl: string | null;
+  kompetensi: string[];
+  prospek: string;
+  fokusKeahlian: Array<{ title: string; icon: string }>;
+}
+
 const JURUSAN_DATA: Jurusan[] = [
   {
     code: "SIJA",
@@ -200,6 +213,8 @@ interface KompetensiSectionProps {
 const ITEMS_PER_PAGE = 6;
 
 export function KompetensiSection({ className }: KompetensiSectionProps) {
+  // Keep the verified preview data visible until the CMS database is populated.
+  const [jurusanData, setJurusanData] = useState<Jurusan[]>(JURUSAN_DATA);
   const [activeCategory, setActiveCategory] = useState<JurusanCategory>("All");
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -209,9 +224,37 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
 
   // Memoize filtered data untuk performa
   const filteredJurusan = useMemo(() => 
-    JURUSAN_DATA.filter((j) => activeCategory === "All" || j.category === activeCategory),
-    [activeCategory]
+    jurusanData.filter((j) => activeCategory === "All" || j.category === activeCategory),
+    [activeCategory, jurusanData]
   );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadJurusan() {
+      try {
+        const response = await fetch("/api/jurusan?limit=100");
+        const payload = await response.json() as { success: boolean; data?: JurusanApiItem[] };
+        if (!response.ok || !payload.success || !payload.data) {
+          throw new Error("Gagal memuat jurusan");
+        }
+
+        if (isMounted && payload.data.length > 0) {
+          setJurusanData(payload.data.map((item) => ({
+            ...item,
+            bgImage: item.bgImageUrl ?? undefined,
+          })));
+        }
+      } catch {
+        // The local seed remains the preview source when the CMS API is unavailable.
+      }
+    }
+
+    loadJurusan();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const totalPages = useMemo(() => 
     Math.ceil(filteredJurusan.length / ITEMS_PER_PAGE),
@@ -233,6 +276,7 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
 
     const interval = setInterval(() => {
       setFocusedIndex((prev) => {
+        if (filteredJurusan.length === 0) return 0;
         const nextIndex = (prev + 1) % filteredJurusan.length;
         setDirection(1);
         const nextPage = Math.floor(nextIndex / ITEMS_PER_PAGE);
@@ -320,7 +364,7 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
       scale: 1,
       transition: {
         duration: 0.3,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
   };
@@ -373,7 +417,9 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
           </div>
         </motion.div>
 
-        {/* Main Content Grid */}
+        {filteredJurusan.length === 0 ? (
+          <p className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-gray-700">Belum ada jurusan yang dipublikasikan pada kategori ini.</p>
+        ) : (
         <div className="grid lg:grid-cols-[1fr_0.65fr] gap-6 lg:gap-8">
           {/* Focus Card - Kiri */}
           <motion.div 
@@ -600,9 +646,10 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
             )}
           </div>
         </div>
+        )}
 
         {/* Auto-rotate Control */}
-        <motion.div 
+        {filteredJurusan.length > 0 && <motion.div 
           className="flex justify-center mt-8 gap-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -621,7 +668,7 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
               {isAutoRotating ? "⏸ Pause" : "▶ Resume"} Auto-Rotate
             </Button>
           </motion.div>
-        </motion.div>
+        </motion.div>}
       </div>
 
       {/* Modal Detail - Optimized untuk mencegah freeze */}
