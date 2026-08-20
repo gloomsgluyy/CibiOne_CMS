@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id">
-      <body className={poppins.variable}>
+      <body className={`${poppins.variable} ${poppins.className}`}>
         <AOSInit />
         {children}
       </body>
