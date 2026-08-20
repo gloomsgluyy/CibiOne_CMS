@@ -3,15 +3,7 @@
 import { TextAnimate } from "@/components/ui/text-animate";
 import { AnimatePresence, motion, useMotionTemplate, useScroll, useTransform } from "motion/react";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-
-const navItems = [
-  { label: "Profil", href: "/profil-sekolah" },
-  { label: "Jurusan", href: "/kompetensi-keahlian" },
-  { label: "Berita", href: "/berita" },
-  { label: "Kontak", href: "/kontak" },
-];
 
 const welcomeTexts = ["WELCOME TO", "SELAMAT DATANG DI", "WILUJENG SUMPING DI"];
 
@@ -29,12 +21,6 @@ export function HeroBanner() {
   const heroBottomInset = useTransform(scrollYProgress, [0, 0.88], [16, viewportHeight - 72]);
   const heroRadius = useTransform(scrollYProgress, [0, 0.88], [48, 0]);
   const heroClip = useMotionTemplate`inset(${heroInset}px ${heroInset}px ${heroBottomInset}px ${heroInset}px round ${heroRadius}px)`;
-  const navPaddingY = useTransform(scrollYProgress, [0, 0.88], [28, 12]);
-  const navTopOpacity = useTransform(scrollY, [viewportHeight * 0.7, viewportHeight * 1.05], [0, 0.9]);
-  const navBottomOpacity = useTransform(scrollY, [viewportHeight * 0.7, viewportHeight * 1.05], [0, 0.72]);
-  const navBlur = useTransform(scrollY, [viewportHeight * 0.95, viewportHeight * 1.05], [0, 16]);
-  const navBackground = useMotionTemplate`linear-gradient(to bottom, rgba(0, 54, 171, ${navTopOpacity}), rgba(0, 54, 171, ${navBottomOpacity}))`;
-  const navBackdropFilter = useMotionTemplate`blur(${navBlur}px)`;
   const contentOpacity = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
 
   useEffect(() => {
@@ -61,19 +47,6 @@ export function HeroBanner() {
 
   return (
     <section id="home-hero" ref={heroRef} className="relative h-[135svh] bg-white">
-      <motion.header
-        className="fixed inset-x-0 top-0 z-50 text-white"
-        style={{
-          paddingTop: navPaddingY,
-          paddingBottom: navPaddingY,
-          background: navBackground,
-          backdropFilter: navBackdropFilter,
-          WebkitBackdropFilter: navBackdropFilter,
-        }}
-      >
-        <div className="px-10 md:px-14"><HeroNav /></div>
-      </motion.header>
-
       <div className="fixed inset-0 z-0 overflow-hidden bg-white">
         <motion.div
           className="relative h-screen w-full transform-gpu overflow-hidden will-change-[clip-path]"
@@ -89,7 +62,6 @@ export function HeroBanner() {
             sizes="100vw"
             className="object-cover brightness-60"
           />
-          <div className="absolute inset-x-0 top-0 z-[1] h-40 bg-gradient-to-b from-[#0036ab]/45 to-transparent" />
           <motion.div
             className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.42)_0%,rgba(0,0,0,0.24)_34%,rgba(0,0,0,0.08)_62%,transparent_100%)]"
           />
@@ -133,38 +105,5 @@ export function HeroBanner() {
         </motion.div>
       </div>
     </section>
-  );
-}
-
-function HeroNav() {
-  return (
-    <nav className="flex items-center justify-between gap-6">
-      <Link href="/" className="flex items-center gap-3">
-        <Image
-          src="/cropped-logo-SMKN-1-Cbn.png"
-          alt="Logo SMKN 1 Cibinong"
-          width={48}
-          height={48}
-          priority
-          className="h-10 w-10 object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.55)] md:h-12 md:w-12"
-        />
-        <span className="hidden text-sm font-medium tracking-[-0.02em] text-white/95 md:block">
-          SMKN 1 CIBINONG
-        </span>
-      </Link>
-      <div className="hidden items-center gap-8 text-sm text-white/75 md:flex">
-        {navItems.map((item) => (
-          <Link key={item.href} href={item.href} className="transition hover:text-white">
-            {item.label}
-          </Link>
-        ))}
-      </div>
-      <Link
-        href="/kontak"
-        className="rounded-full bg-white px-5 py-2 text-sm font-medium text-black shadow-[0_8px_24px_rgba(0,0,0,0.25)] transition hover:bg-white/90"
-      >
-        Hubungi
-      </Link>
-    </nav>
   );
 }

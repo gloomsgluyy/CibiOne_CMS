@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import { motion, useMotionTemplate, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { Timeline } from "@/components/ui/timeline";
 
@@ -118,66 +118,30 @@ const timelineData = [
 
 export function SejarahSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [heroStyles, setHeroStyles] = useState({
-    height: "100vh",
-    subtitleSize: "2rem",
-    titleSize: "5.5rem",
-  });
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  useEffect(() => {
-    const unsubscribe = scrollYProgress.on("change", (latest) => {
-      if (latest <= 0.2) {
-        const progress = latest / 0.2;
-        const height = 100 - (92 * progress); // 100vh -> 8vh
-        const subtitleSize = 2 - (1.25 * progress); // 2rem -> 0.75rem
-        const titleSize = 5.5 - (4.25 * progress); // 5.5rem -> 1.25rem
-
-        requestAnimationFrame(() => {
-          setHeroStyles({
-            height: `${height}vh`,
-            subtitleSize: `${subtitleSize}rem`,
-            titleSize: `${titleSize}rem`,
-          });
-        });
-      } else if (latest > 0.2 && heroStyles.height !== "8vh") {
-        setHeroStyles({
-          height: "8vh",
-          subtitleSize: "0.75rem",
-          titleSize: "1.25rem",
-        });
-      }
-    });
-
-    return () => unsubscribe();
-  }, [scrollYProgress, heroStyles.height]);
-
   const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const heroOpacity = useTransform(scrollYProgress, [0.15, 0.21], [1, 0]);
-  const heroBlur = useTransform(scrollYProgress, [0.15, 0.21], [0, 8]);
-  const timelineOpacity = useTransform(scrollYProgress, [0.22, 0.25], [0, 1]);
+  const heroBottomInset = useTransform(scrollYProgress, [0.02, 0.32], [0, 92]);
+  const heroRadius = useTransform(scrollYProgress, [0.02, 0.32], [0, 24]);
+  const heroClipPath = useMotionTemplate`inset(0% 0% ${heroBottomInset}% 0% round 0 0 ${heroRadius}px ${heroRadius}px)`;
+  const heroContentOpacity = useTransform(scrollYProgress, [0.05, 0.24], [1, 0]);
+  const heroContentScale = useTransform(scrollYProgress, [0.05, 0.24], [1, 0.9]);
+  const timelineOpacity = useTransform(scrollYProgress, [0.32, 0.4], [0, 1]);
+  const timelineY = useTransform(scrollYProgress, [0.32, 0.4], [48, 0]);
 
   return (
-    <section ref={containerRef} style={{ minHeight: "220vh" }}>
+    <section ref={containerRef} className="relative" style={{ minHeight: "220vh" }}>
       {/* Hero Section */}
       <motion.div
-        style={{ 
-          opacity: heroOpacity,
-          filter: `blur(${heroBlur}px)`
-        }}
-        className="sticky top-0 w-full flex items-center justify-center z-20"
+        style={{ clipPath: heroClipPath }}
+        className="sticky top-0 z-20 flex h-screen w-full transform-gpu items-center justify-center will-change-[clip-path]"
       >
-        <div
-          style={{
-            height: heroStyles.height,
-            transition: "height 0.3s ease-out",
-            backgroundColor: "#1b4d96"
-          }}
-          className="relative overflow-hidden w-full flex items-center justify-center"
+        <motion.div
+          style={{ backgroundColor: "#1b4d96" }}
+          className="relative flex h-full w-full items-center justify-center overflow-hidden"
         >
           <div className="absolute inset-0">
             <Image
@@ -189,34 +153,29 @@ export function SejarahSection() {
             />
           </div>
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          <motion.div
+            style={{ opacity: heroContentOpacity, scale: heroContentScale }}
+            className="absolute inset-0 flex transform-gpu flex-col items-center justify-center px-6 text-center"
+          >
             <motion.div
               initial={{ opacity: 0, y: -30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
               className="flex flex-col items-center"
             >
-              <p
-                style={{
-                  fontSize: heroStyles.subtitleSize,
-                  transition: "font-size 0.3s ease-out"
-                }}
-                className="font-medium text-white/90 drop-shadow-lg mb-2"
+              <motion.p
+                className="mb-2 text-xl font-medium text-white/90 drop-shadow-lg md:text-3xl"
               >
                 Sejarah Singkat
-              </p>
-              <h2
-                style={{
-                  fontSize: heroStyles.titleSize,
-                  transition: "font-size 0.3s ease-out"
-                }}
-                className="font-bold text-white drop-shadow-lg leading-tight"
+              </motion.p>
+              <motion.h2
+                className="text-5xl font-bold leading-tight text-white drop-shadow-lg md:text-8xl"
               >
                 SMKN 1 Cibinong
-              </h2>
+              </motion.h2>
             </motion.div>
 
-          </div>
+          </motion.div>
 
           <motion.div
             style={{ opacity: scrollHintOpacity }}
@@ -229,14 +188,16 @@ export function SejarahSection() {
               Scroll untuk melihat lebih lanjut
             </p>
           </motion.div>
-        </div>
+        </motion.div>
       </motion.div>
 
       {/* Timeline Section */}
-      <motion.div style={{ opacity: timelineOpacity }}>
+      <motion.div
+        style={{ opacity: timelineOpacity, y: timelineY }}
+        className="relative z-10 -mt-[100vh] min-h-screen bg-[#1b4d96] pt-[100vh] transform-gpu"
+      >
         <Timeline data={timelineData} />
       </motion.div>
         </section>
   );
 }
- 
