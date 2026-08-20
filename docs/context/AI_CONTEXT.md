@@ -90,6 +90,7 @@ AI **tidak boleh** memutuskan sendiri sebuah section itu static atau dynamic kal
 4. Setiap code reference dari user/PIC wajib didokumentasikan di `docs/references/<halaman>/<section>/` dan dirujuk dari SRS section terkait.
 5. Bahasa UI & konten = Bahasa Indonesia. Kode (variabel, komentar, commit message) = Bahasa Inggris.
 6. Commit message diprefix nama fase: `[Fase1]`, `[Fase2]`, `chore:`, `fix:`.
+7. Jika PIC meminta **reset SRS / reset project SRS / balik ke fase SRS**, jangan lanjut coding. Tambahkan baris baru di execution log terkait dengan status `Rejected` atau `Not Started` sesuai arahan PIC, update status fase dan approval summary. Jangan hapus log lama kecuali PIC eksplisit meminta rewrite dokumen.
 
 ---
 
@@ -98,6 +99,7 @@ AI **tidak boleh** memutuskan sendiri sebuah section itu static atau dynamic kal
 - TypeScript strict mode.
 - Komponen React: functional component, named export dari folder `components/`.
 - Styling: Tailwind utility classes saja, tidak ada CSS module/styled-components tambahan supaya konsisten dengan shadcn/Magic UI.
+- Font utama UI: **Poppins**. Jangan pakai typography default/serif generik yang terlihat seperti AI-generated placeholder. Kalau reference memakai font lain, adaptasi feel-nya ke Poppins kecuali PIC/desain eksplisit meminta font tersebut.
 - Form & validasi: `zod` untuk schema validation, dipakai di client dan server (server actions/route handlers) supaya satu source of truth validasi.
 - Response API selalu pakai envelope yang sama — lihat `architecture.md`.
 
@@ -126,3 +128,7 @@ AI **tidak boleh** memutuskan sendiri sebuah section itu static atau dynamic kal
 | 6 | `docs/templates/SRS_TEMPLATE.md` | Template wajib untuk tiap SRS section |
 | 7 | `docs/context/component-registry.md` | Daftar aktual component/template per section, dengan link — **ini yang dicek, bukan asumsi dari technology stack table di atas** |
 | 8 | `docs/srs/<halaman>/<section>.md` | SRS spesifik section yang sedang dikerjakan |
+
+curl https://api.xkiro.com/v1/chat/completions -H "Authorization: Bearer sk-xt-d5cf3998d835809d26f6ab1a8cf0f0d45530f534e64bbddc"   -d '{"model":"openai/gpt-4o",
+       "messages":[{"role":"user",
+       "content":"Hello!"}]}'

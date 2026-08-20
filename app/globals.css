@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "aos/dist/aos.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 :root {
   --background: #ffffff;
@@ -12,6 +14,335 @@ body {
   color: var(--foreground);
   font-family: var(--font-poppins), sans-serif;
   min-height: 100vh;
+@custom-variant dark (&:is(.dark *));
+
+.featured-program-scroll {
+  scrollbar-width: none;
+}
+
+.featured-program-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.poppins-thin { font-family: "Poppins", sans-serif; font-weight: 100; font-style: normal; }
+.poppins-extralight { font-family: "Poppins", sans-serif; font-weight: 200; font-style: normal; }
+.poppins-light { font-family: "Poppins", sans-serif; font-weight: 300; font-style: normal; }
+.poppins-regular { font-family: "Poppins", sans-serif; font-weight: 400; font-style: normal; }
+.poppins-medium { font-family: "Poppins", sans-serif; font-weight: 500; font-style: normal; }
+.poppins-semibold { font-family: "Poppins", sans-serif; font-weight: 600; font-style: normal; }
+.poppins-bold { font-family: "Poppins", sans-serif; font-weight: 700; font-style: normal; }
+.poppins-extrabold { font-family: "Poppins", sans-serif; font-weight: 800; font-style: normal; }
+.poppins-black { font-family: "Poppins", sans-serif; font-weight: 900; font-style: normal; }
+.poppins-thin-italic { font-family: "Poppins", sans-serif; font-weight: 100; font-style: italic; }
+.poppins-extralight-italic { font-family: "Poppins", sans-serif; font-weight: 200; font-style: italic; }
+.poppins-light-italic { font-family: "Poppins", sans-serif; font-weight: 300; font-style: italic; }
+.poppins-regular-italic { font-family: "Poppins", sans-serif; font-weight: 400; font-style: italic; }
+.poppins-medium-italic { font-family: "Poppins", sans-serif; font-weight: 500; font-style: italic; }
+.poppins-semibold-italic { font-family: "Poppins", sans-serif; font-weight: 600; font-style: italic; }
+.poppins-bold-italic { font-family: "Poppins", sans-serif; font-weight: 700; font-style: italic; }
+.poppins-extrabold-italic { font-family: "Poppins", sans-serif; font-weight: 800; font-style: italic; }
+.poppins-black-italic { font-family: "Poppins", sans-serif; font-weight: 900; font-style: italic; }
+
+@layer utilities {
+  .blur-vignette {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    -webkit-backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--blur));
+    --r: max(var(--transition-length), calc(var(--radius) - var(--inset)));
+    --corner-size: calc(var(--r) + var(--inset)) calc(var(--r) + var(--inset));
+    --corner-gradient: transparent 0px,
+      transparent calc(var(--r) - var(--transition-length)), black var(--r);
+    --fill-gradient: black, black var(--inset),
+      transparent calc(var(--inset) + var(--transition-length)),
+      transparent calc(100% - var(--transition-length) - var(--inset)),
+      black calc(100% - var(--inset));
+    --fill-narrow-size: calc(100% - (var(--inset) + var(--r)) * 2);
+    --fill-farther-position: calc(var(--inset) + var(--r));
+    -webkit-mask-image: linear-gradient(to right, var(--fill-gradient)),
+      linear-gradient(to bottom, var(--fill-gradient)),
+      radial-gradient(at bottom right, var(--corner-gradient)),
+      radial-gradient(at bottom left, var(--corner-gradient)),
+      radial-gradient(at top left, var(--corner-gradient)),
+      radial-gradient(at top right, var(--corner-gradient));
+    -webkit-mask-size:
+      100% var(--fill-narrow-size),
+      var(--fill-narrow-size) 100%,
+      var(--corner-size),
+      var(--corner-size),
+      var(--corner-size),
+      var(--corner-size);
+    -webkit-mask-position:
+      0 var(--fill-farther-position),
+      var(--fill-farther-position) 0,
+      0 0,
+      100% 0,
+      100% 100%,
+      0 100%;
+    -webkit-mask-repeat: no-repeat;
+  }
+
+  .blur-vignette-top-only {
+    background: linear-gradient(to bottom, rgb(0 54 171 / 45%), rgb(0 54 171 / 18%) 55%, rgb(0 54 171 / 0%));
+    -webkit-mask-image: linear-gradient(to bottom, black 0, transparent var(--transition-length));
+    -webkit-mask-size: 100% var(--transition-length);
+    -webkit-mask-position: top;
+    -webkit-mask-repeat: no-repeat;
+    mask-image: linear-gradient(to bottom, black 0, transparent var(--transition-length));
+    mask-size: 100% var(--transition-length);
+    mask-position: top;
+    mask-repeat: no-repeat;
+  }
+
+  @keyframes text-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes text-fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes text-pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes text-shift-in-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes text-roll-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.25em);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes text-whip-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.35em);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes text-whip-in-up {
+    from {
+      transform: translateY(200%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes text-calm-in-up {
+    from {
+      transform: translateY(200%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .animate-text-fade-in {
+    animation: text-fade-in 0.75s both;
+  }
+
+  .animate-text-fade-in-up {
+    animation: text-fade-in-up 0.75s both;
+  }
+
+  .animate-text-pop-in {
+    animation: text-pop-in 0.75s both;
+  }
+
+  .animate-text-shift-in-up {
+    animation: text-shift-in-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-text-roll-in {
+    animation: text-roll-in 0.65s cubic-bezier(0.65, 0, 0.75, 1) both;
+  }
+
+  .animate-text-whip-in {
+    animation: text-whip-in 0.45s cubic-bezier(0.85, 0.1, 0.9, 1.2) both;
+  }
+
+  .animate-text-whip-in-up {
+    animation: text-whip-in-up 0.75s cubic-bezier(0.5, -0.15, 0.25, 1.05) both;
+  }
+
+  .animate-text-calm-in-up {
+    animation: text-calm-in-up 0.75s cubic-bezier(0.125, 0.92, 0.69, 0.975) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-text-fade-in,
+    .animate-text-fade-in-up,
+    .animate-text-pop-in,
+    .animate-text-shift-in-up,
+    .animate-text-roll-in,
+    .animate-text-whip-in,
+    .animate-text-whip-in-up,
+    .animate-text-calm-in-up {
+      animation: none;
+    }
+  }
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
 
 /* Poppins Font Weight Classes */
