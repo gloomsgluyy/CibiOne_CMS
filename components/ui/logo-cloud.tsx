@@ -24,7 +24,7 @@ export function LogoCloud({ className, logos, onLogoClick, ...props }: LogoCloud
         className
       )}
     >
-      <InfiniteSlider gap={60} reverse={false} speed={80}>
+      <InfiniteSlider gap={60} speed={80}>
         {logos.map((logo, index) => (
           <img
             alt={logo.alt}
