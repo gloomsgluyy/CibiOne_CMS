@@ -45,10 +45,9 @@ export function SiteNavbar() {
   const homeBlue = useTransform(scrollY, [viewportHeight * 0.7, viewportHeight * 1.05], [0, 0.82]);
   const homeBlur = useTransform(scrollY, [viewportHeight * 0.92, viewportHeight * 1.05], [0, 16]);
   const homePadding = useTransform(scrollY, [0, viewportHeight * 1.18], [28, 12]);
-  const profileWhite = useTransform(scrollY, [viewportHeight * 0.2, viewportHeight * 0.48], [0.82, 0]);
-  const profileBlue = useTransform(scrollY, [viewportHeight * 0.2, viewportHeight * 0.48], [0, 0.82]);
-  const profileText = useTransform(scrollY, [viewportHeight * 0.2, viewportHeight * 0.48], ["#0b3477", "#ffffff"]);
-  const profileBlur = useTransform(scrollY, [0, viewportHeight * 0.48], [18, 16]);
+  const profileBlue = useTransform(scrollY, [viewportHeight * 0.96, viewportHeight * 1.08], [0, 0.82]);
+  const profileText = useTransform(scrollY, () => "#ffffff");
+  const profileBlur = useTransform(scrollY, [viewportHeight * 0.96, viewportHeight * 1.08], [0, 16]);
   const staticBlue = useTransform(scrollY, () => 0.82);
   const staticBlur = useTransform(scrollY, () => 16);
   const transparent = useTransform(scrollY, () => 0);
@@ -56,10 +55,10 @@ export function SiteNavbar() {
   const compactPadding = useTransform(scrollY, () => 12);
 
   const blueOpacity = isHome ? homeBlue : isProfile ? profileBlue : staticBlue;
-  const whiteOpacity = isProfile ? profileWhite : transparent;
+  const whiteOpacity = transparent;
   const blur = isHome ? homeBlur : isProfile ? profileBlur : staticBlur;
   const color = isProfile ? profileText : white;
-  const paddingY = isHome ? homePadding : compactPadding;
+  const paddingY = isHome || isProfile ? homePadding : compactPadding;
   const background = useMotionTemplate`linear-gradient(rgba(255, 255, 255, ${whiteOpacity}), rgba(255, 255, 255, ${whiteOpacity})), linear-gradient(rgba(0, 54, 171, ${blueOpacity}), rgba(0, 54, 171, ${blueOpacity}))`;
   const backdropFilter = useMotionTemplate`blur(${blur}px) saturate(150%)`;
 

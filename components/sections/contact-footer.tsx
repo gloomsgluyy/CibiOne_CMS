@@ -22,8 +22,8 @@ export function ContactFooter() {
   };
 
   return (
-    <footer className="sm:px-6 md:px-10 md:pt-20 md:pb-20 w-full max-w-7xl mr-auto ml-auto pt-12 pr-4 pb-10 pl-4">
-      <div className="relative overflow-hidden bg-white backdrop-blur-xl rounded-3xl border border-gray-200 shadow-2xl">
+    <footer className="contact-enter sm:px-6 md:px-10 md:pt-20 md:pb-20 w-full max-w-7xl mr-auto ml-auto pt-12 pr-4 pb-10 pl-4">
+      <div className="contact-card-enter relative overflow-hidden bg-white backdrop-blur-xl rounded-3xl border border-gray-200 shadow-2xl">
           <div className="relative z-10 sm:p-12 md:p-16 pt-12 pr-8 pb-8 pl-8">
             <div className="flex items-center gap-3 mb-4">
               <img 

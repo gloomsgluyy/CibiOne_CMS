@@ -6,7 +6,7 @@ import {
   useTransform,
   motion,
 } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 
 interface TimelineEntry {
   title: string;
@@ -18,12 +18,17 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
-  useEffect(() => {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setHeight(rect.height);
-    }
-  }, [ref]);
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const updateHeight = () => setHeight(element.getBoundingClientRect().height);
+    updateHeight();
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -39,7 +44,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
       ref={containerRef}
       style={{ backgroundColor: '#1b4d96' }}
     >
-      <div className="max-w-7xl mx-auto pt-72 pb-8 px-4 md:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl px-4 pb-8 pt-24 md:px-8 md:pt-32 lg:px-10">
         <h2 className="text-3xl md:text-5xl lg:text-6xl mb-6 text-white font-bold tracking-tight">
           Perjalanan SMKN 1 Cibinong
         </h2>
@@ -48,13 +53,13 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
         </p>
       </div>
 
-      <div ref={ref} className="relative max-w-7xl mx-auto pb-32">
+      <div ref={ref} className="relative mx-auto max-w-7xl pb-32">
         {data.map((item, index) => (
           <div
             key={index}
-            className="flex justify-start pt-10 md:pt-40 md:gap-10"
+            className="flex justify-start pt-10 md:gap-10 md:pt-40"
           >
-            <div className="sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full">
+            <div className="sticky top-40 z-20 flex max-w-xs self-start items-center md:w-full md:flex-row lg:max-w-sm">
               <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
                 <div className="h-4 w-4 rounded-full bg-white border-2 border-blue-300" />
               </div>
@@ -75,7 +80,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
           style={{
             height: height + "px",
           }}
-          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-gradient-to-b from-transparent via-white/30 to-transparent [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
+          className="absolute left-8 top-0 w-[2px] overflow-hidden bg-gradient-to-b from-transparent via-white/30 to-transparent [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)] md:left-8"
         >
           <motion.div
             style={{

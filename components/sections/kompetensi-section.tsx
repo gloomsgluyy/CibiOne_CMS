@@ -370,18 +370,18 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
   };
 
   return (
-    <section className={cn("relative py-24 overflow-hidden bg-white", className)}>
-      <div className="container mx-auto px-4 relative z-10">
+    <section className={cn("relative overflow-hidden bg-white py-10 lg:flex lg:h-[calc(100svh-80px)] lg:items-center lg:py-4", className)}>
+      <div className="container relative z-10 mx-auto w-full px-4">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-12 text-center md:text-left"
+          className="mb-6 text-center md:text-left lg:mb-4"
         >
-          <div className="grid gap-6 md:grid-cols-2 md:gap-8 items-start mb-8">
+          <div className="mb-5 grid items-start gap-4 md:grid-cols-2 md:gap-8 lg:mb-3">
             <div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1c4e97] poppins-bold mb-2">
+              <h1 className="mb-1 text-4xl font-bold text-[#1c4e97] poppins-bold md:text-5xl lg:text-5xl">
                 Kompetensi Keahlian
               </h1>
               <p className="text-xl md:text-2xl text-gray-700 poppins-semibold">
@@ -420,10 +420,10 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
         {filteredJurusan.length === 0 ? (
           <p className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-gray-700">Belum ada jurusan yang dipublikasikan pada kategori ini.</p>
         ) : (
-        <div className="grid lg:grid-cols-[1fr_0.65fr] gap-6 lg:gap-8">
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.65fr] lg:gap-8">
           {/* Focus Card - Kiri */}
           <motion.div 
-            className="relative h-[500px] md:h-[600px]"
+            className="relative h-[500px] md:h-[600px] lg:h-[calc(100svh-270px)] lg:min-h-[410px] lg:max-h-[570px]"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
@@ -531,7 +531,7 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
           </motion.div>
 
           {/* Grid Cards - Kanan */}
-          <div className="flex flex-col h-[500px] md:h-[600px]">
+          <div className="flex h-[500px] flex-col md:h-[600px] lg:h-[calc(100svh-270px)] lg:min-h-[410px] lg:max-h-[570px]">
             <motion.div 
               variants={gridVariants}
               initial="hidden"
@@ -648,27 +648,6 @@ export function KompetensiSection({ className }: KompetensiSectionProps) {
         </div>
         )}
 
-        {/* Auto-rotate Control */}
-        {filteredJurusan.length > 0 && <motion.div 
-          className="flex justify-center mt-8 gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              onClick={() => setIsAutoRotating(!isAutoRotating)}
-              className={cn(
-                "px-6 py-3 rounded-full poppins-medium transition-all duration-300",
-                isAutoRotating
-                  ? "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
-                  : "bg-[#1c4e97] text-white hover:bg-[#1c4e97]/90 shadow-xl"
-              )}
-            >
-              {isAutoRotating ? "⏸ Pause" : "▶ Resume"} Auto-Rotate
-            </Button>
-          </motion.div>
-        </motion.div>}
       </div>
 
       {/* Modal Detail - Optimized untuk mencegah freeze */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -89,13 +89,17 @@ const guruStaffData = [
   { id: 59, name: 'Rina Kusumawati, S.T', position: 'Guru Produktif TOI', bio: 'Mengajar kontrol motor, inverter, dan sistem kontrol proses industri.', image: '/banner.jpeg', category: 'TOI' },
 ];
 
+const guruFilters = ['General', 'Staff', 'SIJA', 'RPL', 'TKJ', 'DKV', 'TKP', 'DPIB', 'TP', 'TFLM', 'TKR', 'TOI'];
+
 export function GuruStaffSection() {
+  const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const [detailItem, setDetailItem] = useState(guruStaffData[0]);
   const [activeFilter, setActiveFilter] = useState('General');
   const [currentPage, setCurrentPage] = useState(0);
   const [lastInteractionTime, setLastInteractionTime] = useState(0);
+  const [isSectionVisible, setIsSectionVisible] = useState(false);
 
   // Filter data based on active filter
   const filteredData = activeFilter === 'General' 
@@ -110,9 +114,24 @@ export function GuruStaffSection() {
     (currentPage + 1) * itemsPerPage
   );
 
-  // Auto-advance pagination every 5 seconds (pause for 10s after user interaction)
   useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(([entry]) => setIsSectionVisible(entry.isIntersecting), {
+      threshold: 0.15,
+    });
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  // Do not wake the page while this offscreen section cannot be seen.
+  useEffect(() => {
+    if (!isSectionVisible) return;
+
     const interval = setInterval(() => {
+      if (document.hidden) return;
       const timeSinceInteraction = Date.now() - lastInteractionTime;
       const pauseDuration = 10000; // 10 seconds pause after interaction
       
@@ -122,7 +141,7 @@ export function GuruStaffSection() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [totalPages, lastInteractionTime]);
+  }, [isSectionVisible, totalPages, lastInteractionTime]);
 
   // Reset page when filter changes
   useEffect(() => {
@@ -140,16 +159,16 @@ export function GuruStaffSection() {
   };
 
   return (
-    <section className="w-full py-12 px-6 lg:px-24 min-h-screen" style={{ backgroundColor: '#eff7ff' }}>
-      <div className="w-full max-w-[95vw] mx-auto">
+    <section ref={sectionRef} className="min-h-screen w-full px-4 py-12 sm:px-6 lg:px-24" style={{ backgroundColor: '#eff7ff' }}>
+      <div className="mx-auto w-full max-w-[95vw]">
         {/* Header Section */}
-        <div className="text-center mb-12">
+        <div className="mb-8 text-center md:mb-12">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-blue-900 mb-4"
+            className="mb-3 text-3xl font-bold text-blue-900 sm:text-4xl md:mb-4 md:text-5xl lg:text-6xl"
           >
             Guru & Staff
           </motion.h2>
@@ -159,10 +178,27 @@ export function GuruStaffSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-lg md:text-xl text-gray-600"
+            className="text-base text-gray-600 md:text-xl"
           >
             Tim pengajar dan staf profesional SMKN 1 Cibinong
           </motion.p>
+
+          <div className="mt-6 grid grid-cols-4 gap-1.5 rounded-2xl border border-blue-100 bg-white/75 p-1.5 shadow-sm sm:hidden">
+            {guruFilters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => setActiveFilter(filter)}
+                className="relative rounded-xl px-1 py-2.5 text-xs font-semibold"
+                aria-pressed={activeFilter === filter}
+              >
+                {activeFilter === filter && (
+                  <motion.span layoutId="mobile-guru-filter" className="absolute inset-0 rounded-xl bg-blue-600 shadow-sm" transition={{ type: "spring", stiffness: 420, damping: 34 }} />
+                )}
+                <span className={`relative z-10 transition-colors duration-200 ${activeFilter === filter ? "text-white" : "text-slate-600"}`}>{filter}</span>
+              </button>
+            ))}
+          </div>
 
           {/* Filter Buttons */}
           <motion.div
@@ -170,13 +206,13 @@ export function GuruStaffSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="flex flex-wrap justify-center gap-2 mt-8"
+            className="mt-8 hidden flex-wrap justify-center gap-2 sm:flex"
           >
-            {['General', 'Staff', 'SIJA', 'RPL', 'TKJ', 'DKV', 'TKP', 'DPIB', 'TP', 'TFLM', 'TKR', 'TOI'].map((filter) => (
+            {guruFilters.map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  className={`shrink-0 snap-start rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${
                   activeFilter === filter
                     ? 'bg-blue-600 text-white shadow-lg scale-105'
                     : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
@@ -188,13 +224,48 @@ export function GuruStaffSection() {
           </motion.div>
         </div>
 
+        {/* Mobile uses one readable card instead of the desktop five-panel accordion. */}
+        <AnimatePresence mode="wait">
+          <motion.article
+            key={`mobile-${paginatedData[activeIndex]?.id}`}
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -16 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="relative min-h-[440px] overflow-hidden rounded-3xl border-2 border-blue-200 shadow-2xl sm:hidden"
+          >
+            {paginatedData[activeIndex] && (
+              <>
+                <Image src={paginatedData[activeIndex].image} alt={paginatedData[activeIndex].name} fill quality={55} sizes="100vw" className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-blue-700/80 to-blue-600/60" />
+                <div className="relative flex min-h-[440px] flex-col justify-end p-5 text-white">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-blue-100">{activeFilter}</p>
+                  <h3 className="text-2xl font-bold leading-tight">{paginatedData[activeIndex].name}</h3>
+                  <p className="mt-2 text-sm font-medium text-blue-50">{paginatedData[activeIndex].position}</p>
+                  <p className="mt-4 text-sm leading-relaxed text-white/85">{paginatedData[activeIndex].bio}</p>
+                </div>
+              </>
+            )}
+          </motion.article>
+        </AnimatePresence>
+
+        <div className="mt-4 flex items-center justify-between gap-3 sm:hidden">
+          <button type="button" aria-label="Guru sebelumnya" onClick={() => setActiveIndex((index) => (index - 1 + paginatedData.length) % paginatedData.length)} className="grid h-10 w-10 place-items-center rounded-full border border-blue-200 bg-white text-blue-800 shadow-sm transition active:scale-95">←</button>
+          <div className="flex gap-1.5" aria-label="Pilih guru atau staf">
+            {paginatedData.map((item, index) => (
+              <button key={item.id} type="button" onClick={() => setActiveIndex(index)} className={`h-2.5 rounded-full transition-all ${activeIndex === index ? "w-7 bg-blue-600" : "w-2.5 bg-blue-200"}`} aria-label={`Tampilkan ${item.name}`} />
+            ))}
+          </div>
+          <button type="button" aria-label="Guru berikutnya" onClick={() => setActiveIndex((index) => (index + 1) % paginatedData.length)} className="grid h-10 w-10 place-items-center rounded-full border border-blue-200 bg-white text-blue-800 shadow-sm transition active:scale-95">→</button>
+        </div>
+
         {/* Horizontal Accordion Container */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="h-[70vh] min-h-[480px] relative overflow-hidden"
+          className="relative hidden h-[70vh] min-h-[480px] overflow-hidden sm:block"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -203,13 +274,13 @@ export function GuruStaffSection() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -50, opacity: 0 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="flex md:gap-4 gap-2 h-full"
+              className="flex h-full gap-1.5 sm:gap-2 md:gap-4"
             >
               {paginatedData.map((item, index) => (
                 <motion.div
                   key={item.id}
                   layout
-                  className={`relative rounded-3xl border-2 border-blue-200 shadow-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-in-out ${
+                  className={`relative min-w-0 cursor-pointer overflow-hidden rounded-2xl border-2 border-blue-200 shadow-2xl transition-[flex] duration-500 ease-in-out sm:rounded-3xl ${
                     activeIndex === index ? 'flex-[4]' : 'flex-[0.5]'
                   }`}
                   onClick={() => {
@@ -224,7 +295,9 @@ export function GuruStaffSection() {
                   src={item.image}
                   alt={item.name}
                   fill
-                  className="object-cover"
+                  className="object-cover object-center"
+                  quality={55}
+                  sizes="(max-width: 640px) 30vw, 20vw"
                 />
                 <div 
                   className="absolute inset-0 bg-gradient-to-br from-blue-800/90 to-blue-600/90"
@@ -232,7 +305,7 @@ export function GuruStaffSection() {
               </div>
 
               {/* Content Container */}
-              <div className="relative h-full w-full p-6 flex flex-col">
+               <div className="relative flex h-full w-full flex-col p-3 sm:p-6">
                 <AnimatePresence mode="wait">
                   {activeIndex === index ? (
                     <motion.div
@@ -256,15 +329,15 @@ export function GuruStaffSection() {
                         <span>Person</span>
                       </motion.div> */}
 
-                      <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
+                      <h3 className="mb-1 text-lg font-bold text-white sm:mb-2 sm:text-2xl md:text-3xl lg:text-4xl">
                         {item.name}
                       </h3>
 
-                      <p className="text-lg md:text-xl text-white/90 mb-6">
+                      <p className="mb-3 text-sm text-white/90 sm:mb-6 sm:text-lg md:text-xl">
                         {item.position}
                       </p>
 
-                      <p className="text-sm text-white/80 leading-relaxed text-justify">
+                      <p className="line-clamp-4 text-xs leading-relaxed text-justify text-white/80 sm:text-sm">
                         {item.bio}
                       </p>
 
@@ -283,24 +356,7 @@ export function GuruStaffSection() {
                       </motion.button> */}
                     </motion.div>
                   ) : (
-                    <motion.div
-                      key={`${item.id}-inactive`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="h-full flex items-center justify-center"
-                    >
-                      <h3 
-                        className="text-white font-bold text-2xl md:text-3xl lg:text-4xl"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed'
-                        }}
-                      >
-                        {item.name.split(' ')[0]}
-                      </h3>
-                    </motion.div>
+                    <div aria-hidden className="h-full" />
                   )}
                 </AnimatePresence>
               </div>
@@ -316,7 +372,7 @@ export function GuruStaffSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex justify-center gap-2 mt-8"
+          className="mt-8 hidden justify-center gap-2 sm:flex"
         >
           {Array.from({ length: totalPages }).map((_, index) => (
             <button

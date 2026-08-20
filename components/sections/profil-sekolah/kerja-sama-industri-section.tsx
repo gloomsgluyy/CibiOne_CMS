@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogoCloud } from "@/components/ui/logo-cloud";
 import { X } from "lucide-react";
@@ -114,6 +115,15 @@ export function KerjaSamaIndustriSection() {
     setTimeout(() => setSelectedCompany(null), 300);
   };
 
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isModalOpen]);
+
   return (
     <section className="relative py-16 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: "#1b4d96" }}>
       <div className="max-w-7xl mx-auto w-full">
@@ -149,35 +159,36 @@ export function KerjaSamaIndustriSection() {
       </div>
 
       {/* Modal */}
-      <AnimatePresence>
-        {isModalOpen && selectedCompany && (
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {isModalOpen && selectedCompany && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md sm:p-8"
             onClick={closeModal}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ opacity: 0, scale: 0.94, y: 18 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 18 }}
               transition={{ duration: 0.3 }}
-              className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden"
+              className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10"
+                className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
                 aria-label="Close"
               >
                 <X className="w-5 h-5 text-gray-600" />
               </button>
 
-              <div className="p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-24 h-24 flex items-center justify-center bg-gray-50 rounded-xl p-4">
+              <div className="p-6 sm:p-8">
+                <div className="flex items-center gap-4 border-b border-gray-200 pb-6 pr-10">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-gray-50 p-4">
                     <img
                       src={selectedCompany.src}
                       alt={selectedCompany.alt}
@@ -185,7 +196,7 @@ export function KerjaSamaIndustriSection() {
                     />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900">
+                    <h3 className="text-xl font-bold text-gray-900 sm:text-2xl">
                       {selectedCompany.name}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
@@ -194,19 +205,21 @@ export function KerjaSamaIndustriSection() {
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-6">
-                  <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+                <div className="pt-6">
+                  <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-700">
                     Program Kerja Sama
                   </h4>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="leading-relaxed text-gray-600">
                     {selectedCompany.description}
                   </p>
                 </div>
               </div>
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </section>
   );
 }

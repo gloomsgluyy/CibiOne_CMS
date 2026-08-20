@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useMotionTemplate, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { Timeline } from "@/components/ui/timeline";
 
@@ -117,45 +116,33 @@ const timelineData = [
 ];
 
 export function SejarahSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const heroBottomInset = useTransform(scrollYProgress, [0.02, 0.32], [0, 92]);
-  const heroRadius = useTransform(scrollYProgress, [0.02, 0.32], [0, 24]);
-  const heroClipPath = useMotionTemplate`inset(0% 0% ${heroBottomInset}% 0% round 0 0 ${heroRadius}px ${heroRadius}px)`;
-  const heroContentOpacity = useTransform(scrollYProgress, [0.05, 0.24], [1, 0]);
-  const heroContentScale = useTransform(scrollYProgress, [0.05, 0.24], [1, 0.9]);
-  const timelineOpacity = useTransform(scrollYProgress, [0.32, 0.4], [0, 1]);
-  const timelineY = useTransform(scrollYProgress, [0.32, 0.4], [48, 0]);
-
   return (
-    <section ref={containerRef} className="relative" style={{ minHeight: "220vh" }}>
+    <section className="relative isolate overflow-clip bg-[#1b4d96]">
       {/* Hero Section */}
-      <motion.div
-        style={{ clipPath: heroClipPath }}
-        className="sticky top-0 z-20 flex h-screen w-full transform-gpu items-center justify-center will-change-[clip-path]"
-      >
-        <motion.div
-          style={{ backgroundColor: "#1b4d96" }}
-          className="relative flex h-full w-full items-center justify-center overflow-hidden"
-        >
-          <div className="absolute inset-0">
+      <div className="sticky top-0 z-0 flex h-[100svh] min-h-[38rem] w-full items-center justify-center">
+        <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#1b4d96]">
+          <motion.div
+            className="absolute inset-0"
+            initial={{ opacity: 0, scale: 1.035 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          >
             <Image
               src="/banner.jpeg"
               alt="SMKN 1 Cibinong"
               fill
               className="object-cover opacity-40"
               priority
+              quality={60}
+              sizes="100vw"
             />
-          </div>
+          </motion.div>
 
           <motion.div
-            style={{ opacity: heroContentOpacity, scale: heroContentScale }}
-            className="absolute inset-0 flex transform-gpu flex-col items-center justify-center px-6 text-center"
+            className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <motion.div
               initial={{ opacity: 0, y: -30 }}
@@ -178,8 +165,9 @@ export function SejarahSection() {
           </motion.div>
 
           <motion.div
-            style={{ opacity: scrollHintOpacity }}
             className="absolute bottom-12 left-0 right-0 flex flex-col items-center justify-center z-10"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white animate-bounce mb-2">
               <path d="M12 5v14M19 12l-7 7-7-7"/>
@@ -188,16 +176,13 @@ export function SejarahSection() {
               Scroll untuk melihat lebih lanjut
             </p>
           </motion.div>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Timeline Section */}
-      <motion.div
-        style={{ opacity: timelineOpacity, y: timelineY }}
-        className="relative z-10 -mt-[100vh] min-h-screen bg-[#1b4d96] pt-[100vh] transform-gpu"
-      >
+      <div className="relative z-10 min-h-screen bg-[#1b4d96]">
         <Timeline data={timelineData} />
-      </motion.div>
-        </section>
+      </div>
+    </section>
   );
 }

@@ -97,25 +97,25 @@ const galleryItems = [
 
 export function AkreditasiSection() {
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-to-b from-blue-50 to-cyan-50 py-24 px-4 sm:px-6 lg:px-8">
+    <section className="relative flex min-h-screen items-center bg-gradient-to-b from-blue-50 to-cyan-50 px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
       <div className="max-w-7xl mx-auto w-full">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={containerVariants}
-          className="text-center mb-16"
+          className="mb-10 text-center sm:mb-16"
         >
           <motion.h2
             variants={itemVariants}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-blue-900 mb-6"
+            className="mb-4 text-3xl font-bold tracking-tight text-blue-900 sm:mb-6 sm:text-5xl lg:text-6xl"
           >
             Membangun Standar Pendidikan <br className="hidden sm:block" />
             yang Terpercaya
           </motion.h2>
           <motion.p
             variants={itemVariants}
-            className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mt-4"
+            className="mx-auto mt-4 max-w-2xl text-sm text-gray-600 sm:text-lg"
           >
             Berkomitmen mewujudkan pendidikan berkualitas dengan standar akreditasi terpercaya dan lulusan siap industri.
           </motion.p>
@@ -126,13 +126,13 @@ export function AkreditasiSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={containerVariants}
-          className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-4 auto-rows-[280px]"
+          className="grid auto-rows-[220px] grid-cols-1 gap-3 sm:auto-rows-[250px] sm:gap-4 md:grid-cols-6 md:auto-rows-[280px] lg:grid-cols-12"
         >
           {galleryItems.map((item) => (
             <motion.div
               key={item.id}
               variants={itemVariants}
-              className={`relative overflow-hidden rounded-2xl group cursor-pointer ${item.className}`}
+               className={`group relative overflow-hidden rounded-2xl ${item.className}`}
             >
               {item.type === "image" ? (
                 <>
@@ -140,33 +140,34 @@ export function AkreditasiSection() {
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/95 via-gray-900/60 to-gray-900/20"></div>
                   </div>
 
-                  <div className="relative h-full flex flex-col justify-end p-6 text-white backdrop-blur-[2px]">
+                   <div className="relative flex h-full flex-col justify-end p-4 text-white sm:p-6">
                     <span className="inline-block w-fit px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs font-medium mb-3 shadow-sm">
                       {item.tag}
                     </span>
-                    <h3 className="text-xl sm:text-2xl font-semibold mb-2 transition-transform duration-300 group-hover:translate-y-[-4px] drop-shadow-lg">
+                     <h3 className="mb-2 text-lg font-semibold transition-transform duration-300 group-hover:translate-y-[-4px] sm:text-2xl">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-white/95 leading-relaxed drop-shadow-md">
+                     <p className="text-xs leading-relaxed text-white/95 sm:text-sm">
                       {item.description}
                     </p>
                   </div>
                 </>
               ) : (
-                <div className="relative h-full flex flex-col justify-between p-6 bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg">
+                 <div className="relative flex h-full flex-col justify-between border border-white/60 bg-white/80 p-4 shadow-lg backdrop-blur-xl sm:p-6">
                   <span className="inline-block w-fit px-3 py-1 rounded-full bg-blue-500/15 text-blue-700 text-xs font-medium backdrop-blur-sm">
                     {item.tag}
                   </span>
                   <div>
-                    <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 transition-transform duration-300 group-hover:translate-y-[-4px]">
+                     <h3 className="mb-2 text-lg font-semibold text-gray-900 transition-transform duration-300 group-hover:translate-y-[-4px] sm:mb-3 sm:text-2xl">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
+                     <p className="text-xs leading-relaxed text-gray-600 sm:text-sm">
                       {item.description}
                     </p>
                   </div>

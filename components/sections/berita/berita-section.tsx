@@ -229,7 +229,7 @@ export function BeritaSection() {
   return (
     <section
       aria-label="Konten berita"
-      className="relative overflow-hidden bg-[#f4f8fa] pb-16 pt-6 sm:pb-20 lg:pb-24"
+      className="relative overflow-hidden bg-[#f4f8fa] pb-16 sm:pb-20 lg:pb-24"
     >
       <div
         className="relative mx-auto max-w-[1720px] px-4 sm:px-6 lg:px-8 xl:px-10"

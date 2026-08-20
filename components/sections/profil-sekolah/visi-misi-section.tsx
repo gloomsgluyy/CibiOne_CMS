@@ -59,17 +59,18 @@ const visiMisiData = [
 
 export function VisiMisiSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeItem = visiMisiData[activeIndex];
 
   return (
-    <section className="w-full bg-gray-50 py-8 px-6 lg:px-12 flex flex-col mt-12 items-center min-h-screen">
+    <section className="mt-0 flex min-h-screen w-full flex-col items-center bg-gray-50 px-4 py-12 sm:px-6 md:mt-12 md:px-8 md:py-8 lg:px-12">
         {/* Header Section */}
-        <div className="text-center mb-12">
+        <div className="mb-8 text-center md:mb-12">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-blue-900 mb-4"
+            className="mb-3 text-3xl font-bold text-blue-900 sm:text-4xl md:mb-4 md:text-5xl lg:text-6xl"
           >
             Visi & Misi
           </motion.h2>
@@ -79,7 +80,7 @@ export function VisiMisiSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-lg md:text-xl text-gray-600"
+            className="text-base text-gray-600 md:text-xl"
           >
             Visi & Misi dari sekolah SMKN 1 Cibinong
           </motion.p>
@@ -90,14 +91,61 @@ export function VisiMisiSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-[85vw] mx-auto"
+        className="mx-auto w-full max-w-[1440px]"
       >
-        <div className="flex md:gap-6 gap-4 h-[72vh] min-h-[500px]">
+        <div className="mb-4 grid grid-cols-2 gap-2 rounded-2xl bg-blue-100 p-1.5 sm:hidden">
+          {visiMisiData.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              className={`rounded-xl px-4 py-3 text-sm font-bold transition-colors ${activeIndex === index ? "bg-[#123e91] text-white shadow-sm" : "text-[#123e91]"}`}
+              aria-pressed={activeIndex === index}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative overflow-hidden rounded-3xl border-2 border-blue-200 bg-[#123e91] shadow-[0_24px_60px_rgba(15,50,120,0.22)] sm:hidden">
+          <div className="absolute inset-0">
+            <Image src="/banner.jpeg" alt="Gedung SMKN 1 Cibinong" fill sizes="100vw" quality={50} className="object-cover" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(13,47,121,0.96),rgba(31,100,226,0.9))]" />
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeItem.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.24, ease: "easeOut" }}
+              className="relative p-5"
+            >
+              <p className="mb-2 text-xs font-bold tracking-[0.18em] text-blue-100">{activeItem.label}</p>
+              <h3 className="text-2xl font-bold leading-tight text-white">{activeItem.title}</h3>
+              <p className="mt-2 text-base font-medium text-blue-50">{activeItem.subtitle}</p>
+              <p className="mt-4 text-sm leading-relaxed text-white/85">{activeItem.description}</p>
+              <div className="mt-5 grid gap-2.5">
+                {activeItem.points.map((point, index) => (
+                  <div key={point.title} className="flex items-start gap-3 rounded-2xl border border-white/20 bg-white/10 p-3.5">
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-blue-500 text-sm font-bold text-white">{index + 1}</span>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">{point.title}</h4>
+                      <p className="mt-1 text-xs leading-relaxed text-white/80">{point.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="hidden h-[min(72vh,700px)] min-h-[560px] gap-5 sm:flex lg:gap-7">
           {visiMisiData.map((item, index) => (
             <motion.div
               key={item.id}
-              className={`relative rounded-3xl border-2 border-blue-200 shadow-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-in-out ${
-                activeIndex === index ? 'flex-[4]' : 'flex-[0.5]'
+                className={`relative min-w-0 overflow-hidden rounded-3xl border-2 border-blue-200 shadow-2xl transition-[flex] duration-500 ease-in-out ${
+                   activeIndex === index ? 'flex-[5] cursor-pointer' : 'flex-[0.55] cursor-pointer'
               }`}
               onClick={() => setActiveIndex(index)}
               onMouseEnter={() => setActiveIndex(index)}
@@ -109,6 +157,8 @@ export function VisiMisiSection() {
                   alt={item.label}
                   fill
                   className="object-cover"
+                  quality={55}
+                  sizes="(max-width: 1024px) 80vw, 70vw"
                 />
                 <div 
                   className="absolute inset-0"
@@ -120,7 +170,6 @@ export function VisiMisiSection() {
                 />
               </div>
 
-              Kiri atas badge
               {/* {activeIndex === index && (
                 <div className="absolute top-4 left-4 z-20">
                   <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-4 py-2 text-sm text-white font-semibold shadow-lg">
@@ -133,7 +182,7 @@ export function VisiMisiSection() {
               )} */}
 
               {/* Content Container */}
-              <div className="relative h-full w-full p-14 flex flex-col">
+              <div className="relative flex h-full w-full flex-col p-7 lg:p-12">
                 <AnimatePresence mode="wait">
                   {activeIndex === index ? (
                     <motion.div
@@ -144,35 +193,35 @@ export function VisiMisiSection() {
                       transition={{ duration: 0.4 }}
                       className="h-full flex flex-col"
                     >
-                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
+                      <h2 className="mb-2 text-3xl font-bold text-white md:text-4xl lg:text-5xl">
                         {item.title}
                       </h2>
 
-                      <p className="text-xl md:text-2xl text-white/90 mb-6">
+                      <p className="mb-5 text-lg text-white/90 md:text-xl lg:text-2xl">
                         {item.subtitle}
                       </p>
 
-                      <p className="text-base text-white/80 leading-relaxed mb-8 text-justify">
+                      <p className="mb-7 text-base leading-relaxed text-white/80">
                         {item.description}
                       </p>
 
                       {/* Points List dengan Glassmorphism - kecil dan bagus */}
-                      <div className="grid md:grid-cols-2 gap-12 flex-1 overflow-y-auto pr-2">
+                      <div className="grid flex-1 grid-cols-2 gap-4 lg:gap-6">
                         {item.points.map((point, idx) => (
                           <motion.div
                             key={idx}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 + (idx * 0.05) }}
-                            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 shadow-lg flex flex-col items-center text-center min-h-[120px]"
+                            className="flex min-h-[150px] flex-col items-center justify-center rounded-2xl border border-white/20 bg-white/10 p-4 text-center shadow-lg"
                           >
-                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-3 shadow-lg">
+                            <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg lg:h-16 lg:w-16">
                               <span className="text-white font-bold text-xl md:text-2xl">{idx + 1}</span>
                             </div>
-                            <h4 className="text-white font-semibold text-base md:text-lg mb-2">
+                            <h4 className="mb-2 text-base font-semibold text-white lg:text-lg">
                               {point.title}
                             </h4>
-                            <p className="text-white/80 text-sm md:text-base leading-snug">
+                            <p className="text-sm leading-snug text-white/80">
                               {point.desc}
                             </p>
                           </motion.div>
@@ -186,14 +235,11 @@ export function VisiMisiSection() {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="h-full flex items-center justify-center"
+                        className="flex h-full items-center justify-center"
                     >
                       <h3 
-                        className="text-white font-bold text-3xl md:text-4xl lg:text-5xl"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed'
-                        }}
+                          className="text-3xl font-bold text-white [writing-mode:vertical-rl] lg:text-5xl"
+                        style={{ textOrientation: 'mixed' }}
                       >
                         {item.label}
                       </h3>

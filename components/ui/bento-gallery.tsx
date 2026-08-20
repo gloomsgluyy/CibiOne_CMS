@@ -1,10 +1,9 @@
 "use client"
 
 import React, { useRef, useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import {
   motion,
-  useScroll,
-  useTransform,
   AnimatePresence,
   useMotionValue,
   animate,
@@ -55,35 +54,36 @@ const ImageModal = ({
   item: ImageItem
   onClose: () => void
 }) => {
-  return (
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm sm:p-8"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        className="relative w-full max-w-4xl p-4"
+        className="relative flex h-full w-full max-w-6xl items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
         <img
           src={item.url}
           alt={item.title}
-          className="h-auto max-h-[90vh] w-full rounded-lg object-contain"
+          className="max-h-[88vh] w-auto max-w-full rounded-xl object-contain shadow-2xl"
         />
       </motion.div>
       <button
         onClick={onClose}
-        className="absolute right-4 top-4 text-white/80 transition-colors hover:text-white"
+        className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full bg-black/35 text-white transition-colors hover:bg-black/55 sm:right-8 sm:top-8"
         aria-label="Close image view"
       >
         <X size={24} />
       </button>
-    </motion.div>
+    </motion.div>,
+    document.body,
   )
 }
 
@@ -137,22 +137,21 @@ const InteractiveImageBentoGallery: React.FC<
     }
   }, [autoPlay, isHovered, isDragging, autoPlaySpeed, x])
 
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-    offset: ["start end", "end start"],
-  })
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
-  const y = useTransform(scrollYProgress, [0, 0.2], [30, 0])
+  useEffect(() => {
+    if (!selectedItem) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [selectedItem])
 
   return (
     <section
       ref={targetRef}
       className="relative w-full overflow-hidden bg-background py-16 sm:py-24"
     >
-      <motion.div
-        style={{ opacity, y }}
-        className="container mx-auto px-4 text-center"
-      >
+      <div className="container mx-auto px-4 text-center">
         <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -165,7 +164,7 @@ const InteractiveImageBentoGallery: React.FC<
         <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
           {description}
         </p>
-      </motion.div>
+      </div>
 
       <div
         ref={containerRef}
@@ -233,14 +232,6 @@ const InteractiveImageBentoGallery: React.FC<
           </motion.div>
         </motion.div>
       </div>
-
-      {autoPlay && (
-        <div className="mt-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            {isDragging ? "Manual scroll" : isHovered ? "Paused" : "Auto"} • Drag atau hover untuk kontrol
-          </p>
-        </div>
-      )}
 
       <AnimatePresence>
         {selectedItem && (
