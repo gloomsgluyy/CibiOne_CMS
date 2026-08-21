@@ -25,7 +25,7 @@ import { NewsDetailModal } from "./news-detail-modal";
 
 type NewsFilter = "latest" | "popular";
 
-const NEWS_ITEMS: NewsItem[] = [
+const FALLBACK_NEWS_ITEMS: NewsItem[] = [
   {
     id: 1,
     title: "Siswa SMKN 1 Cibinong Raih Prestasi di Tingkat Nasional",
@@ -204,17 +204,18 @@ const NEWS_ITEMS: NewsItem[] = [
 
 const AUTO_PLAY_DELAY = 5500;
 
-export function BeritaSection() {
+export function BeritaSection({ items = FALLBACK_NEWS_ITEMS, achievements }: { items?: NewsItem[]; achievements?: import("./prestasi-gallery").Achievement[] }) {
   const reduceMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState<NewsFilter>("latest");
   const [isPaused, setIsPaused] = useState(false);
 
+  const newsItems = items.length ? items : FALLBACK_NEWS_ITEMS;
   const sideNews =
     activeFilter === "popular"
-      ? [...NEWS_ITEMS.slice(0, 3)].sort((first, second) => first.popularRank - second.popularRank)
-      : NEWS_ITEMS.slice(0, 3);
-  const carouselNews = NEWS_ITEMS.slice(0, 3);
+      ? [...newsItems.slice(0, 3)].sort((first, second) => first.popularRank - second.popularRank)
+      : newsItems.slice(0, 3);
+  const carouselNews = newsItems.slice(0, 3);
   const activeNews = carouselNews[activeIndex] ?? carouselNews[0];
   useEffect(() => {
     if (isPaused || reduceMotion) return;
@@ -412,9 +413,9 @@ export function BeritaSection() {
         </div>
 
       </div>
-      <HighlightPrestasi />
+      <HighlightPrestasi achievements={achievements} />
       <div className="mx-auto max-w-[1720px] px-4 sm:px-6 lg:px-8 xl:px-10">
-        <BeritaList items={NEWS_ITEMS} />
+        <BeritaList items={newsItems} />
       </div>
     </section>
   );

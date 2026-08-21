@@ -1,0 +1,3 @@
+"use client";
+import { ResourcePage, StatusBadge } from "@/components/admin/resource-page";
+export default function MitraPage() { return <ResourcePage config={{ title: "Mitra Industri", description: "Kelola logo dan informasi kerja sama industri.", resource: "kerjasama-industri", createHref: "/admin/mitra-industri/baru", editPrefix: "/admin/mitra-industri", columns: ["Nama Mitra", "Website", "Urutan", "Status"], fields: (item) => [<span className="font-semibold">{item.name}</span>, <span className="text-slate-500">{item.websiteUrl ?? "-"}</span>, <span>{item.sortOrder ?? 0}</span>, <StatusBadge published={item.isPublished} />] }} />; }

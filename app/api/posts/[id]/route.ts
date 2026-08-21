@@ -1,5 +1,62 @@
-import { apiError } from "@/lib/api-response";
+import { eq } from "drizzle-orm";
+import { NextRequest } from "next/server";
 
-export async function GET() {
-  return apiError({ code: "NOT_IMPLEMENTED", message: "Post detail belum diimplementasi" }, { status: 501 });
+import { posts } from "@/db/schema";
+import { apiError, apiSuccess } from "@/lib/api-response";
+import { assertJurusanScope } from "@/lib/auth";
+import { getSession } from "@/server/auth/session";
+import { routeError } from "@/server/http";
+import { postIdSchema, postInputSchema } from "@/server/validators/posts";
+
+type Context = { params: Promise<{ id: string }> };
+
+async function findScopedPost(id: number) {
+  const session = await getSession();
+  if (!session) return { session: null, post: null };
+  const { db } = await import("@/db");
+  const [post] = await db.select().from(posts).where(eq(posts.id, id)).limit(1);
+  if (!post) return { session, post: null };
+  assertJurusanScope(session, post.jurusanId);
+  return { session, post };
+}
+
+export async function GET(_: NextRequest, context: Context) {
+  try {
+    const id = postIdSchema.parse((await context.params).id);
+    const { session, post } = await findScopedPost(id);
+    if (!session) return apiError({ code: "UNAUTHENTICATED", message: "Silakan masuk terlebih dahulu." }, { status: 401 });
+    if (!post) return apiError({ code: "NOT_FOUND", message: "Post tidak ditemukan." }, { status: 404 });
+    return apiSuccess(post);
+  } catch (error) {
+    return routeError(error);
+  }
+}
+
+export async function PUT(request: NextRequest, context: Context) {
+  try {
+    const id = postIdSchema.parse((await context.params).id);
+    const { session, post } = await findScopedPost(id);
+    if (!session) return apiError({ code: "UNAUTHENTICATED", message: "Silakan masuk terlebih dahulu." }, { status: 401 });
+    if (!post) return apiError({ code: "NOT_FOUND", message: "Post tidak ditemukan." }, { status: 404 });
+    const input = postInputSchema.parse(await request.json());
+    const { db } = await import("@/db");
+    const [updated] = await db.update(posts).set({ ...input, jurusanId: post.jurusanId, galleryUrls: input.galleryUrls ?? [], updatedAt: new Date() }).where(eq(posts.id, id)).returning();
+    return apiSuccess(updated);
+  } catch (error) {
+    return routeError(error);
+  }
+}
+
+export async function DELETE(_: NextRequest, context: Context) {
+  try {
+    const id = postIdSchema.parse((await context.params).id);
+    const { session, post } = await findScopedPost(id);
+    if (!session) return apiError({ code: "UNAUTHENTICATED", message: "Silakan masuk terlebih dahulu." }, { status: 401 });
+    if (!post) return apiError({ code: "NOT_FOUND", message: "Post tidak ditemukan." }, { status: 404 });
+    const { db } = await import("@/db");
+    const [updated] = await db.update(posts).set({ isPublished: false, updatedAt: new Date() }).where(eq(posts.id, id)).returning();
+    return apiSuccess(updated);
+  } catch (error) {
+    return routeError(error);
+  }
 }

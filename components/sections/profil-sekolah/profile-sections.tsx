@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { type ComponentType, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 const VisiMisiSection = dynamic(
   () => import("./visi-misi-section").then((module) => module.VisiMisiSection),
@@ -24,7 +24,7 @@ const KerjaSamaIndustriSection = dynamic(
   { ssr: false },
 );
 
-function DeferredSection({ Component, rootMargin = "320px 0px" }: { Component: ComponentType; rootMargin?: string }) {
+function DeferredSection({ children, rootMargin = "320px 0px" }: { children: ReactNode; rootMargin?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -45,17 +45,21 @@ function DeferredSection({ Component, rootMargin = "320px 0px" }: { Component: C
     return () => observer.disconnect();
   }, []);
 
-  return <div ref={ref} className="profile-deferred-section">{isVisible && <Component />}</div>;
+  return <div ref={ref} className="profile-deferred-section">{isVisible && children}</div>;
 }
 
-export function ProfileSections() {
+type Facility = { id: number; title: string; description: string | null; imageUrl: string | null; presentationSlot: string };
+type GuruItem = { id: number; name: string; position: string; bio: string; image: string; category: string };
+type Partner = { id: number; name: string; logoUrl: string | null; description: string | null; websiteUrl: string | null };
+
+export function ProfileSections({ facilities, guru, partners }: { facilities: Facility[]; guru: GuruItem[]; partners: Partner[] }) {
   return (
     <>
-      <DeferredSection Component={VisiMisiSection} rootMargin="700px 0px" />
-      <DeferredSection Component={GuruStaffSection} />
-      <DeferredSection Component={SaranaPrasaranaSection} />
-      <DeferredSection Component={AkreditasiSection} />
-      <DeferredSection Component={KerjaSamaIndustriSection} />
+      <DeferredSection rootMargin="700px 0px"><VisiMisiSection /></DeferredSection>
+      <DeferredSection><GuruStaffSection items={guru} /></DeferredSection>
+      <DeferredSection><SaranaPrasaranaSection facilities={facilities} /></DeferredSection>
+      <DeferredSection><AkreditasiSection /></DeferredSection>
+      <DeferredSection><KerjaSamaIndustriSection partners={partners} /></DeferredSection>
     </>
   );
 }

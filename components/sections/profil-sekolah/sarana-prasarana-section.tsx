@@ -89,11 +89,27 @@ const saranaPrasaranaItems = [
   },
 ]
 
-export function SaranaPrasaranaSection() {
+type Facility = { id: number; title: string; description: string | null; imageUrl: string | null; presentationSlot: string };
+
+const slotSpan: Record<string, string> = {
+  featured_large: "md:col-span-2 md:row-span-2",
+  standard: "md:row-span-1",
+  tall: "md:row-span-2",
+  wide: "md:col-span-2 md:row-span-1",
+};
+
+export function SaranaPrasaranaSection({ facilities }: { facilities: Facility[] }) {
+  const imageItems = facilities.length ? facilities.map((facility) => ({
+    id: facility.id,
+    title: facility.title,
+    desc: facility.description ?? "",
+    url: facility.imageUrl ?? "/banner.jpeg",
+    span: slotSpan[facility.presentationSlot] ?? slotSpan.standard,
+  })) : saranaPrasaranaItems;
   return (
     <div className="w-full bg-gray-50">
       <InteractiveImageBentoGallery
-        imageItems={saranaPrasaranaItems}
+        imageItems={imageItems}
         title="Sarana & Prasarana"
         description="Fasilitas lengkap untuk mendukung pembelajaran berkualitas."
         autoPlay={true}

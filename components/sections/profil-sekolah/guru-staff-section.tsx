@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
-const guruStaffData = [
+const fallbackGuruStaffData = [
   // General - Leadership
   { id: 1, name: 'Dr. Sugiyo, S.Pd, M.Pd', position: 'Kepala Sekolah', bio: 'Memimpin SMKN 1 Cibinong dengan visi keunggulan dan karakter. Berpengalaman lebih dari 20 tahun di bidang pendidikan.', image: '/banner.jpeg', category: 'General' },
   { id: 2, name: 'Dr. Eneng Nurahman, S.Pd, M.Si', position: 'Wakil Kepala Sekolah Bidang Kurikulum', bio: 'Mengelola kurikulum dan pembelajaran dengan fokus pada standar industri dan kompetensi siswa.', image: '/banner.jpeg', category: 'General' },
@@ -89,9 +89,12 @@ const guruStaffData = [
   { id: 59, name: 'Rina Kusumawati, S.T', position: 'Guru Produktif TOI', bio: 'Mengajar kontrol motor, inverter, dan sistem kontrol proses industri.', image: '/banner.jpeg', category: 'TOI' },
 ];
 
-const guruFilters = ['General', 'Staff', 'SIJA', 'RPL', 'TKJ', 'DKV', 'TKP', 'DPIB', 'TP', 'TFLM', 'TKR', 'TOI'];
+type GuruItem = { id: number; name: string; position: string; bio: string; image: string; category: string };
 
-export function GuruStaffSection() {
+const guruFilters = ['General', 'Staff', 'SIJA', 'RPL', 'TKJ', 'DKV', 'TKP', 'TFLM', 'TP', 'DPIB', 'TKR', 'TOI'];
+
+export function GuruStaffSection({ items }: { items: GuruItem[] }) {
+  const guruStaffData = items.length ? items : fallbackGuruStaffData;
   const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [open, setOpen] = useState(false);
@@ -149,7 +152,7 @@ export function GuruStaffSection() {
     setActiveIndex(0);
   }, [activeFilter]);
 
-  const handleOpenDetail = (item: typeof guruStaffData[0]) => {
+  const handleOpenDetail = (item: GuruItem) => {
     setDetailItem(item);
     setOpen(true);
   };

@@ -1,3 +1,3 @@
-export default function AdminGuruPage() {
-  return <main className="p-6">Admin Guru</main>;
-}
+"use client";
+import { ResourcePage, StatusBadge } from "@/components/admin/resource-page";
+export default function GuruPage() { return <ResourcePage config={{ title: "Guru & Staff", description: "Kelola data guru dan staff sekolah.", resource: "guru", createHref: "/admin/guru/baru", editPrefix: "/admin/guru", columns: ["Profil", "Jabatan", "Kategori", "Status"], fields: (item) => [<span className="font-semibold">{item.name}</span>, <span className="text-slate-500">{item.position ?? "-"}</span>, <span className="text-slate-500">{item.category?.name ?? "Tanpa kategori"}</span>, <StatusBadge published={item.isPublished} />] }} />; }

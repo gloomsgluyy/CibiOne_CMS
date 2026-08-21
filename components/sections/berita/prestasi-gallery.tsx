@@ -57,11 +57,11 @@ const AchievementCard = memo(function AchievementCard({ achievement, onSelect }:
   );
 });
 
-export function PrestasiGallery() {
+export function PrestasiGallery({ achievements = ACHIEVEMENTS }: { achievements?: Achievement[] }) {
   const [page, setPage] = useState(0);
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
-  const pageCount = Math.ceil(ACHIEVEMENTS.length / PER_PAGE);
-  const pageItems = ACHIEVEMENTS.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
+  const pageCount = Math.max(1, Math.ceil(achievements.length / PER_PAGE));
+  const pageItems = achievements.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
   const columns = [pageItems.filter((_, index) => index % 3 === 0), pageItems.filter((_, index) => index % 3 === 1), pageItems.filter((_, index) => index % 3 === 2)];
 
   async function openAchievement(achievement: Achievement) {

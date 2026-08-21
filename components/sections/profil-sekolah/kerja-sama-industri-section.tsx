@@ -28,7 +28,7 @@ const itemVariants = {
   },
 };
 
-const partnerLogos = [
+const fallbackPartnerLogos = [
   {
     src: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
     alt: "Google",
@@ -101,7 +101,16 @@ const partnerLogos = [
   },
 ];
 
-export function KerjaSamaIndustriSection() {
+type Partner = { id: number; name: string; logoUrl: string | null; description: string | null; websiteUrl: string | null };
+
+export function KerjaSamaIndustriSection({ partners }: { partners: Partner[] }) {
+  const partnerLogos = partners.length ? partners.map((partner) => ({
+    src: partner.logoUrl ?? "/banner.jpeg",
+    alt: partner.name,
+    width: 120,
+    name: partner.name,
+    description: partner.description ?? "",
+  })) : fallbackPartnerLogos;
   const [selectedCompany, setSelectedCompany] = useState<typeof partnerLogos[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

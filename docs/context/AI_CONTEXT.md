@@ -129,6 +129,4 @@ AI **tidak boleh** memutuskan sendiri sebuah section itu static atau dynamic kal
 | 7 | `docs/context/component-registry.md` | Daftar aktual component/template per section, dengan link — **ini yang dicek, bukan asumsi dari technology stack table di atas** |
 | 8 | `docs/srs/<halaman>/<section>.md` | SRS spesifik section yang sedang dikerjakan |
 
-curl https://api.xkiro.com/v1/chat/completions -H "Authorization: Bearer sk-xt-d5cf3998d835809d26f6ab1a8cf0f0d45530f534e64bbddc"   -d '{"model":"openai/gpt-4o",
-       "messages":[{"role":"user",
-       "content":"Hello!"}]}'
+Provider credentials must only exist in non-committed environment variables. Any previously exposed key must be revoked before production.

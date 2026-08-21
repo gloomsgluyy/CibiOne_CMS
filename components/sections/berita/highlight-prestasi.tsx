@@ -21,7 +21,6 @@ const AchievementModal = dynamic(
 
 const AUTO_ADVANCE_DELAY = 5200;
 const ITEMS_PER_PAGE = 3;
-const HIGHLIGHTS = ACHIEVEMENTS.slice(0, 6);
 const ratioClassName = { portrait: "aspect-[16/10]", landscape: "aspect-[16/10]", square: "aspect-[16/10]" } as const;
 
 function HighlightCard({ achievement, onSelect }: { achievement: Achievement; onSelect: (achievement: Achievement) => Promise<void> }) {
@@ -40,12 +39,13 @@ function HighlightCard({ achievement, onSelect }: { achievement: Achievement; on
   );
 }
 
-export function HighlightPrestasi() {
+export function HighlightPrestasi({ achievements = ACHIEVEMENTS }: { achievements?: Achievement[] }) {
   const reduceMotion = useReducedMotion();
   const [page, setPage] = useState(0);
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
-  const pages = Math.ceil(HIGHLIGHTS.length / ITEMS_PER_PAGE);
-  const activeItems = HIGHLIGHTS.slice(page * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE + ITEMS_PER_PAGE);
+  const highlights = achievements.slice(0, 6);
+  const pages = Math.max(1, Math.ceil(highlights.length / ITEMS_PER_PAGE));
+  const activeItems = highlights.slice(page * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE + ITEMS_PER_PAGE);
 
   useEffect(() => {
     if (reduceMotion) return;
