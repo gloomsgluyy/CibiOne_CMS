@@ -249,7 +249,47 @@ npx drizzle-kit migrate
 
 Jangan otomatis menjalankan migration dari setiap worker PM2. Jalankan satu kali dari deployment job/operator. Gunakan migration backward-compatible agar aplikasi lama tetap bekerja selama deployment.
 
-Auto-deploy VPS memerlukan GitHub Actions self-hosted runner atau SSH deployment action dengan GitHub Secrets. Jangan implementasikan sebelum SSH key khusus deploy, host verification, user non-root, rollback, dan branch protection siap.
+### Auto-deploy dari GitHub Actions
+
+Workflow `.github/workflows/deploy.yml` menjalankan deploy hanya setelah workflow `CI` pada `main` berhasil. Workflow memakai SSH biasa, bukan self-hosted runner, sehingga GitHub tidak mendapat shell runner permanen pada VPS.
+
+Pada VPS, siapkan user deploy non-root yang memiliki ownership project dan akses PM2:
+
+```bash
+sudo adduser --disabled-password --gecos "" cibione
+sudo chown -R cibione:cibione /var/www/cibione-cms
+sudo -iu cibione pm2 startup
+```
+
+Jalankan command `sudo` yang dicetak PM2 sebagai administrator, lalu sebagai user `cibione`:
+
+```bash
+sudo -iu cibione pm2 save
+sudo chmod 750 /var/www/cibione-cms/scripts/deploy-vps.sh
+```
+
+Buat SSH key khusus deploy dari workstation. Jangan gunakan key personal atau root:
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/cibione-deploy -C cibione-github-actions
+ssh-copy-id -i ~/.ssh/cibione-deploy.pub cibione@SERVER_IP
+ssh-keyscan -t ed25519 SERVER_IP
+```
+
+
+Tambahkan GitHub Actions **Environment** bernama `production`, aktifkan required reviewers, lalu isi secrets berikut:
+
+| Secret | Isi |
+| --- | --- |
+| `DEPLOY_HOST` | hostname/IP VPS |
+| `DEPLOY_USER` | `cibione` |
+| `DEPLOY_PATH` | `/var/www/cibione-cms` |
+| `DEPLOY_SSH_PRIVATE_KEY` | private key khusus deploy |
+| `DEPLOY_KNOWN_HOSTS` | host key terverifikasi, bukan output mentah tanpa review |
+
+Atur branch protection `main`: pull request wajib, CI wajib hijau, force-push dilarang. Push ke `main` akan menjalankan CI lalu deploy. Migration dijalankan sekali sebelum build/restart; migration tetap harus backward-compatible dan sudah direview.
+
+Rollback otomatis belum dilakukan. Jika health check atau startup gagal, tahan release dan pulihkan commit terakhir secara manual setelah memastikan migration kompatibel. Jangan menaruh secret di repository.
 
 ## 8. Urutan Release Schema
 
