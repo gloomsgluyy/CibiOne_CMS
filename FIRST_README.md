@@ -173,13 +173,13 @@ Jika benar-benar memakai VPS, jangan mengasumsikan flow Vercel berlaku. Putuskan
 - Deployment hook dari GitHub.
 - Backup dan rollback.
 
-Untuk VPS auto-deploy, gunakan deployment script yang aman dan idempotent. Minimal urutan:
+Untuk setup PM2 lengkap, ikuti `docs/PRODUCTION_SETUP.md` bagian **Alternatif VPS dengan PM2**. Untuk VPS auto-deploy, gunakan deployment script yang aman dan idempotent. Minimal urutan:
 
 ```bash
 npm ci
 npm run build
-npm run db:migrate
-sudo systemctl restart cibione-cms
+npx drizzle-kit migrate
+pm2 restart cibione-cms --update-env
 ```
 
 Jangan menaruh secret di script yang di-commit. Jangan menjalankan migration setelah aplikasi baru aktif jika schema baru wajib tersedia; gunakan urutan migration yang backward-compatible sesuai `docs/PRODUCTION_SETUP.md`.

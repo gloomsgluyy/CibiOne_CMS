@@ -140,7 +140,99 @@ Setelah terhubung, setiap push ke `main` membuat deployment production otomatis.
 
 Preview deployment otomatis dibuat untuk pull request. Jangan arahkan Preview ke database production. Gunakan database preview terpisah atau jangan isi `DATABASE_URL` pada Preview.
 
-## 8. Urutan release schema
+## 8. Alternatif VPS dengan PM2
+
+Bagian ini hanya dipakai jika aplikasi tidak dideploy ke Vercel. Gunakan PM2 sebagai process manager Node.js; jangan mencampurnya dengan systemd service untuk process aplikasi yang sama.
+
+Install kebutuhan pada Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install -y git nginx
+node --version
+npm --version
+sudo npm install -g pm2
+```
+
+Gunakan Node.js 22 LTS. Jika Node belum tersedia, install melalui NodeSource atau `nvm` sesuai kebijakan server.
+
+Clone dan build pertama:
+
+```bash
+sudo mkdir -p /var/www/cibione-cms
+sudo chown -R "$USER":"$USER" /var/www/cibione-cms
+git clone https://github.com/gloomsgluyy/CibiOne_CMS.git /var/www/cibione-cms
+cd /var/www/cibione-cms
+npm ci
+npm run build
+```
+
+Buat env production di server:
+
+```bash
+nano .env.production
+chmod 600 .env.production
+```
+
+Isi variable dari `.env.example`. Jangan commit `.env.production` dan jangan menyimpan secret di PM2 ecosystem file.
+
+Jalankan Next.js melalui PM2:
+
+```bash
+set -a
+. ./.env.production
+set +a
+pm2 start npm --name cibione-cms -- start
+pm2 save
+pm2 startup
+```
+
+Jalankan command yang dicetak oleh `pm2 startup` dengan `sudo`, lalu ulangi:
+
+```bash
+pm2 save
+```
+
+Operasional:
+
+```bash
+pm2 status
+pm2 logs cibione-cms
+pm2 restart cibione-cms --update-env
+pm2 stop cibione-cms
+pm2 delete cibione-cms
+```
+
+Nginx harus meneruskan traffic HTTPS ke `127.0.0.1:3000`. Jangan membuka port `3000` ke internet. Aktifkan firewall untuk SSH, HTTP, HTTPS; gunakan Certbot atau TLS provider yang disetujui.
+
+Deploy update manual:
+
+```bash
+cd /var/www/cibione-cms
+git status
+git pull --ff-only origin main
+npm ci
+npm run test:backend
+npx tsc --noEmit
+npm run build
+pm2 restart cibione-cms --update-env
+pm2 save
+```
+
+Jika release membawa migration, jalankan migration yang sudah direview sebelum restart aplikasi baru:
+
+```bash
+set -a
+. ./.env.production
+set +a
+npx drizzle-kit migrate
+```
+
+Jangan otomatis menjalankan migration dari setiap worker PM2. Jalankan satu kali dari deployment job/operator. Gunakan migration backward-compatible agar aplikasi lama tetap bekerja selama deployment.
+
+Auto-deploy VPS memerlukan GitHub Actions self-hosted runner atau SSH deployment action dengan GitHub Secrets. Jangan implementasikan sebelum SSH key khusus deploy, host verification, user non-root, rollback, dan branch protection siap. Vercel tetap pilihan paling sederhana untuk auto-deploy `main`.
+
+## 9. Urutan release schema
 
 Migration dan deployment harus backward-compatible:
 
@@ -168,7 +260,7 @@ npm run db:seed
 
 Untuk release rutin, jalankan migration dari protected migration job atau operator yang memiliki secret production. Setelah migration sukses, push `main` untuk deployment.
 
-## 9. Database performance
+## 10. Database performance
 
 Sudah tersedia:
 
@@ -201,7 +293,7 @@ Saat traffic naik, urutan optimasi:
 
 Rate limiter saat ini in-memory per instance. Aman sebagai baseline single instance, tidak cukup untuk multi-instance production karena setiap instance memiliki counter berbeda.
 
-## 10. Cron dan scheduled posts
+## 11. Cron dan scheduled posts
 
 Editor sudah memiliki konsep scheduling, tetapi production membutuhkan worker/cron yang memproses post terjadwal. Jangan menganggap `publishedAt` otomatis menerbitkan data hanya karena timestamp berubah.
 
@@ -213,7 +305,7 @@ Sebelum fitur scheduling diaktifkan:
 - Pastikan job idempotent.
 - Uji timezone Asia/Jakarta.
 
-## 11. Domain, security, backup
+## 12. Domain, security, backup
 
 - Tambahkan custom domain di Vercel.
 - Pastikan HTTPS aktif.
@@ -224,7 +316,7 @@ Sebelum fitur scheduling diaktifkan:
 - Batasi role `jurusan_admin` server-side; jangan percaya scope dari browser.
 - Monitor error rate API login, upload, chatbot, dan database.
 
-## 12. Checklist ready production
+## 13. Checklist ready production
 
 - [ ] `npm ci` berhasil.
 - [ ] `npx tsc --noEmit` berhasil.
