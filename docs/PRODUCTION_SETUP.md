@@ -1,17 +1,15 @@
 # CibiOne CMS: Clone sampai Production
 
-Runbook default: GitHub `main` -> Vercel, PostgreSQL managed, Vercel Blob.
+Runbook default: GitHub `main` -> self-hosted VPS, PostgreSQL lokal, media lokal. Chatbot tetap memakai provider AI eksternal.
 
 ## 1. Prasyarat
 
 - GitHub repository
 - Node.js 22 LTS
 - npm 10+
-- Vercel account
-- Managed PostgreSQL: Neon atau Supabase
-- Vercel Blob
+- VPS Ubuntu/Debian dengan storage persisten
+- PostgreSQL lokal pada VPS atau host internal terpisah
 - Provider chatbot yang kompatibel dengan kontrak internal
-- Domain production
 
 Local verification:
 
@@ -41,14 +39,21 @@ Copy-Item .env.example .env.local
 
 Jangan commit `.env.local`. `.gitignore` sudah mengecualikan semua `.env*`, kecuali `.env.example`.
 
-## 3. PostgreSQL
+## 3. PostgreSQL Lokal
 
-Buat database production di region terdekat pengguna, idealnya Singapore. Ambil connection string pooled dengan SSL.
+Install PostgreSQL pada VPS atau host internal. Jangan expose port PostgreSQL ke internet; aplikasi cukup memakai `127.0.0.1` bila database berada di VPS yang sama.
+
+```bash
+sudo apt update
+sudo apt install -y postgresql postgresql-contrib
+sudo -u postgres createuser --pwprompt cibione
+sudo -u postgres createdb --owner=cibione cibione
+```
 
 Isi `.env.local`:
 
 ```env
-DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
+DATABASE_URL="postgresql://cibione:REPLACE_PASSWORD@127.0.0.1:5432/cibione"
 INITIAL_ADMIN_EMAIL="admin@example.com"
 INITIAL_ADMIN_PASSWORD="GANTI_DENGAN_PASSWORD_RANDOM_PANJANG"
 ```
@@ -64,13 +69,9 @@ npm run db:seed
 
 Seed aman dijalankan ulang untuk baseline yang memakai conflict check. Setelah login pertama, ganti password admin bila flow tersedia. Jika belum tersedia, update password melalui prosedur database terkontrol, bukan menyimpan password plaintext.
 
-## 4. Media dan chatbot
+## 4. Media Lokal dan Chatbot
 
-Buat Vercel Blob store. Isi token pada Vercel, bukan file lokal yang di-commit:
-
-```env
-BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
-```
+Upload disimpan di `public/uploads/<session-id>/` pada disk VPS. Directory ini harus persisten, writable oleh user aplikasi, masuk backup, dan tidak boleh dihapus saat deploy. Jangan menyimpan upload di repository.
 
 Chatbot saat ini membutuhkan provider eksternal:
 
@@ -124,25 +125,9 @@ npm run build
 
 CI tidak membutuhkan database karena build repo memiliki fallback development. Jangan memasukkan production secrets ke CI hanya untuk build.
 
-## 7. Auto-deploy setiap push `main`
+## 7. Deployment VPS
 
-1. Push repository ke GitHub.
-2. Vercel -> `Add New Project` -> import repository.
-3. Framework: Next.js.
-4. Root directory: repository root.
-5. Install command: `npm ci` atau default Vercel.
-6. Build command: `npm run build`.
-7. Production branch: `main`.
-8. Tambahkan environment variables untuk `Production`, `Preview`, dan `Development` sesuai kebutuhan.
-9. Deploy sekali.
-
-Setelah terhubung, setiap push ke `main` membuat deployment production otomatis. Tidak perlu menjalankan `vercel deploy` manual.
-
-Preview deployment otomatis dibuat untuk pull request. Jangan arahkan Preview ke database production. Gunakan database preview terpisah atau jangan isi `DATABASE_URL` pada Preview.
-
-## 8. Alternatif VPS dengan PM2
-
-Bagian ini hanya dipakai jika aplikasi tidak dideploy ke Vercel. Gunakan PM2 sebagai process manager Node.js; jangan mencampurnya dengan systemd service untuk process aplikasi yang sama.
+Gunakan PM2 sebagai process manager Node.js; jangan mencampurnya dengan systemd service untuk process aplikasi yang sama.
 
 Install kebutuhan pada Ubuntu/Debian:
 
@@ -164,6 +149,8 @@ sudo chown -R "$USER":"$USER" /var/www/cibione-cms
 git clone https://github.com/gloomsgluyy/CibiOne_CMS.git /var/www/cibione-cms
 cd /var/www/cibione-cms
 npm ci
+mkdir -p public/uploads
+chmod 750 public/uploads
 npm run build
 ```
 
@@ -203,7 +190,39 @@ pm2 stop cibione-cms
 pm2 delete cibione-cms
 ```
 
-Nginx harus meneruskan traffic HTTPS ke `127.0.0.1:3000`. Jangan membuka port `3000` ke internet. Aktifkan firewall untuk SSH, HTTP, HTTPS; gunakan Certbot atau TLS provider yang disetujui.
+Buat `/etc/nginx/sites-available/cibione-cms` dengan domain dan TLS yang sudah ada:
+
+```nginx
+server {
+    listen 80;
+    server_name example.com www.example.com;
+
+    client_max_body_size 5m;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Aktifkan site dan firewall:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/cibione-cms /etc/nginx/sites-enabled/cibione-cms
+sudo nginx -t
+sudo systemctl reload nginx
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+```
+
+Jangan membuka port `3000` atau `5432` ke internet.
 
 Deploy update manual:
 
@@ -230,9 +249,9 @@ npx drizzle-kit migrate
 
 Jangan otomatis menjalankan migration dari setiap worker PM2. Jalankan satu kali dari deployment job/operator. Gunakan migration backward-compatible agar aplikasi lama tetap bekerja selama deployment.
 
-Auto-deploy VPS memerlukan GitHub Actions self-hosted runner atau SSH deployment action dengan GitHub Secrets. Jangan implementasikan sebelum SSH key khusus deploy, host verification, user non-root, rollback, dan branch protection siap. Vercel tetap pilihan paling sederhana untuk auto-deploy `main`.
+Auto-deploy VPS memerlukan GitHub Actions self-hosted runner atau SSH deployment action dengan GitHub Secrets. Jangan implementasikan sebelum SSH key khusus deploy, host verification, user non-root, rollback, dan branch protection siap.
 
-## 9. Urutan release schema
+## 8. Urutan Release Schema
 
 Migration dan deployment harus backward-compatible:
 
@@ -241,7 +260,7 @@ Migration dan deployment harus backward-compatible:
 3. Backfill data.
 4. Jadikan constraint wajib pada release berikutnya.
 
-Jangan menjalankan `drizzle-kit push` di production. Jangan menaruh `db:migrate` di build command Vercel tanpa memahami risiko concurrent deployment.
+Jangan menjalankan `drizzle-kit push` di production. Jangan menaruh `db:migrate` di build command atau semua worker PM2 karena migration dapat berjalan konkuren.
 
 Initial production:
 
@@ -260,7 +279,7 @@ npm run db:seed
 
 Untuk release rutin, jalankan migration dari protected migration job atau operator yang memiliki secret production. Setelah migration sukses, push `main` untuk deployment.
 
-## 10. Database performance
+## 9. Database performance
 
 Sudah tersedia:
 
@@ -293,7 +312,7 @@ Saat traffic naik, urutan optimasi:
 
 Rate limiter saat ini in-memory per instance. Aman sebagai baseline single instance, tidak cukup untuk multi-instance production karena setiap instance memiliki counter berbeda.
 
-## 11. Cron dan scheduled posts
+## 10. Cron dan scheduled posts
 
 Editor sudah memiliki konsep scheduling, tetapi production membutuhkan worker/cron yang memproses post terjadwal. Jangan menganggap `publishedAt` otomatis menerbitkan data hanya karena timestamp berubah.
 
@@ -305,16 +324,24 @@ Sebelum fitur scheduling diaktifkan:
 - Pastikan job idempotent.
 - Uji timezone Asia/Jakarta.
 
-## 12. Domain, security, backup
+## 11. Domain, security, backup
 
-- Tambahkan custom domain di Vercel.
-- Pastikan HTTPS aktif.
+- Gunakan domain dan TLS yang sudah tersedia.
 - Rotate semua credential historis.
-- Aktifkan MFA GitHub, Vercel, database, Blob, dan chatbot provider.
-- Simpan secrets hanya di Vercel/GitHub Secrets.
-- Aktifkan backup database dan uji restore berkala.
+- Aktifkan MFA GitHub dan chatbot provider.
+- Simpan secrets hanya di `.env.production` dengan permission `600`.
+- Backup PostgreSQL dan `public/uploads/` ke media berbeda; uji restore berkala.
 - Batasi role `jurusan_admin` server-side; jangan percaya scope dari browser.
 - Monitor error rate API login, upload, chatbot, dan database.
+
+Backup harian minimal:
+
+```bash
+sudo -u postgres pg_dump -Fc cibione > /var/backups/cibione-$(date +%F).dump
+tar -C /var/www/cibione-cms -czf /var/backups/cibione-uploads-$(date +%F).tar.gz public/uploads
+```
+
+Salin backup ke storage atau server lain yang dikuasai sendiri. Disk VPS yang sama bukan backup.
 
 ## 13. Checklist ready production
 
@@ -326,10 +353,10 @@ Sebelum fitur scheduling diaktifkan:
 - [ ] Login production berhasil.
 - [ ] Logout dan session expiry berhasil.
 - [ ] CRUD posts berhasil.
-- [ ] Upload Blob berhasil.
+- [ ] Upload filesystem berhasil setelah restart/deploy.
 - [ ] Public site hanya menampilkan konten terbit.
 - [ ] Scheduled posts belum diaktifkan sebelum cron siap.
 - [ ] Chatbot provider berhasil dan rate limit diuji.
 - [ ] Role scope diuji dengan akun `jurusan_admin`.
 - [ ] Backup dan restore diuji.
-- [ ] Push kecil ke `main` menghasilkan deployment production otomatis.
+- [ ] Backup dan restore PostgreSQL serta media diuji.

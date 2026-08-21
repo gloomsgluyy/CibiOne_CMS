@@ -17,9 +17,9 @@ CibiOne CMS is a Next.js modular monolith for SMKN 1 Cibinong. It contains the e
 - shadcn/ui using Base UI primitives
 - Drizzle ORM and PostgreSQL
 - TanStack Query for selected admin server state
-- Vercel Blob for CMS images
+- Local VPS filesystem for CMS images (`public/uploads/`)
 - Next.js server cache and cache tags for public content
-- Vercel deployment target
+- Full self-hosted VPS deployment target (Nginx, PM2, PostgreSQL)
 - Node.js 22 LTS
 
 ## Implemented Backend
@@ -31,7 +31,7 @@ CibiOne CMS is a Next.js modular monolith for SMKN 1 Cibinong. It contains the e
 - Server-side jurusan scoping exists across core CRUD paths. Never trust a client-provided scope for authorization.
 - Zod validators and standard `{ success, data/error, meta? }` API envelopes.
 - CRUD route handlers for posts, categories, guru, facilities, partners, jurusan, and settings.
-- Vercel Blob upload endpoint with authentication, MIME allowlist, 5 MB limit, random filename, and baseline rate limiting.
+- Local filesystem upload endpoint with authentication, MIME allowlist, 5 MB limit, random filename, and baseline rate limiting.
 - Public content query layer for posts, guru, facilities, partners, and settings.
 - Initial post service/repository boundary and cache invalidation.
 - Markdown sanitization helper.
@@ -83,7 +83,6 @@ Required production variables:
 DATABASE_URL=
 INITIAL_ADMIN_EMAIL=
 INITIAL_ADMIN_PASSWORD=
-BLOB_READ_WRITE_TOKEN=
 CHATBOT_PROVIDER_URL=
 CHATBOT_PROVIDER_KEY=
 ```
@@ -95,15 +94,14 @@ Never commit real values. A provider key was historically exposed in documentati
 - Canonical runbook: `docs/PRODUCTION_SETUP.md`.
 - GitHub CI: `.github/workflows/ci.yml`.
 - CI runs `npm ci`, strict typecheck, and production build on pull requests and pushes to `main`.
-- Connect the GitHub repository to Vercel with production branch `main` for automatic deployment after every push.
-- Use a managed PostgreSQL region near Indonesia, preferably Singapore.
-- Run reviewed Drizzle migrations separately from the Vercel build.
+- Deploy to the self-hosted VPS with Nginx, PM2, PostgreSQL, and persistent `public/uploads/` storage.
+- Run reviewed Drizzle migrations separately from application build/restart.
 - Do not use `drizzle-kit push` against production.
 - Do not connect preview deployments to the production database.
 
 ## Known Production Gaps
 
-- Runtime migration, seed, PostgreSQL integration, and Blob upload have not been verified against disposable/production infrastructure in this workspace.
+- Runtime migration, seed, PostgreSQL integration, and filesystem upload have not been verified against disposable/production infrastructure in this workspace.
 - In-memory rate limiting is per instance. Replace it with Upstash Redis or equivalent before relying on limits in multi-instance production.
 - Scheduled publishing is incomplete. Public queries must enforce `publishedAt <= now`; add an idempotent protected cron/job before enabling scheduling.
 - TanStack Query exists, but several newer generic admin pages still use direct `fetch` and local state.

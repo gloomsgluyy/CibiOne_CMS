@@ -7,8 +7,8 @@ Dokumen ini untuk engineer yang baru mengambil alih project. Ikuti urutan. Janga
 - Project: CibiOne CMS SMKN 1 Cibinong.
 - Repository: `https://github.com/gloomsgluyy/CibiOne_CMS.git`.
 - Branch production: `main`.
-- Stack: Next.js 15, React 19, TypeScript, Tailwind 4, Drizzle, PostgreSQL, Vercel Blob.
-- Target deployment: Vercel. VPS hanya dipakai bila deployment architecture memang diputuskan pindah ke VPS.
+- Stack: Next.js 15, React 19, TypeScript, Tailwind 4, Drizzle, PostgreSQL, local filesystem media.
+- Target deployment: full self-hosted VPS. Chatbot tetap memakai provider AI eksternal.
 
 ## 2. Setelah Masuk VPS
 
@@ -84,7 +84,6 @@ Isi variable sesuai environment, bukan memakai credential historis:
 DATABASE_URL=
 INITIAL_ADMIN_EMAIL=
 INITIAL_ADMIN_PASSWORD=
-BLOB_READ_WRITE_TOKEN=
 CHATBOT_PROVIDER_URL=
 CHATBOT_PROVIDER_KEY=
 ```
@@ -144,7 +143,7 @@ Preview login bukan credential production.
 Canonical flow:
 
 ```text
-push main -> GitHub CI -> Vercel auto-deploy
+push main -> GitHub CI -> deploy VPS
 ```
 
 GitHub CI berada di `.github/workflows/ci.yml` dan menjalankan:
@@ -155,25 +154,13 @@ npx tsc --noEmit
 npm run build
 ```
 
-Production setup, Vercel, PostgreSQL, Blob, domain, backup, dan security:
+Production setup VPS, PostgreSQL lokal, media lokal, domain, backup, dan security:
 
 ```text
 docs/PRODUCTION_SETUP.md
 ```
 
-Jika benar-benar memakai VPS, jangan mengasumsikan flow Vercel berlaku. Putuskan dulu:
-
-- Reverse proxy: Nginx/Caddy.
-- Process manager: systemd/PM2.
-- TLS certificate.
-- Firewall.
-- Secret manager.
-- PostgreSQL network policy.
-- Blob provider.
-- Deployment hook dari GitHub.
-- Backup dan rollback.
-
-Untuk setup PM2 lengkap, ikuti `docs/PRODUCTION_SETUP.md` bagian **Alternatif VPS dengan PM2**. Untuk VPS auto-deploy, gunakan deployment script yang aman dan idempotent. Minimal urutan:
+Full self-hosted memakai Nginx, PM2, PostgreSQL lokal, dan filesystem media. Untuk deploy VPS, gunakan urutan:
 
 ```bash
 npm ci
@@ -191,7 +178,7 @@ Jangan menaruh secret di script yang di-commit. Jangan menjalankan migration set
 - Auth/session/RBAC.
 - CRUD posts, categories, guru, facilities, partners, settings.
 - Drizzle schema, migrations, seeds.
-- Vercel Blob upload endpoint.
+- Local filesystem upload endpoint (`public/uploads/`).
 - Dashboard, Top Posts, content analytics.
 - Public content query layer and initial cache tags.
 - TanStack Query foundation for admin.
@@ -205,7 +192,7 @@ Fitur berikut belum lengkap atau belum runtime-verified:
 - Chatbot admin management UI.
 - Scheduled publishing worker/cron.
 - Distributed rate limiting; current limiter is in-memory per instance.
-- Full PostgreSQL/Blob production integration test.
+- Full PostgreSQL/media production integration test.
 - Full API authorization matrix integration test.
 - Complete role-aware admin menu visibility.
 - Complete settings repeaters.
