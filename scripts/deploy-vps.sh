@@ -3,6 +3,9 @@ set -Eeuo pipefail
 
 : "${DEPLOY_PATH:?DEPLOY_PATH is required}"
 cd "$DEPLOY_PATH"
+set -a
+. ./.env.production
+set +a
 
 git pull --ff-only origin main
 npm ci
