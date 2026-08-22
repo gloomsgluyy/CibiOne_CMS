@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       ? [desc(posts.isPopularOverride), desc(posts.viewCount), desc(posts.publishedAt)]
       : [desc(posts.publishedAt), desc(posts.createdAt)];
     const [data, totalResult] = await Promise.all([
-      db.select({ id: posts.id, type: posts.type, title: posts.title, slug: posts.slug, excerpt: posts.excerpt, imageUrl: posts.imageUrl, publishedAt: posts.publishedAt, isFeatured: posts.isFeatured, featuredOrder: posts.featuredOrder, isHighlighted: posts.isHighlighted, highlightOrder: posts.highlightOrder, category: { name: postCategories.name, slug: postCategories.slug } }).from(posts).leftJoin(postCategories, eq(posts.categoryId, postCategories.id)).where(where).orderBy(...order).limit(query.limit).offset((query.page - 1) * query.limit),
+      db.select({ id: posts.id, type: posts.type, title: posts.title, slug: posts.slug, excerpt: posts.excerpt, imageUrl: posts.imageUrl, publishedAt: posts.publishedAt, isPublished: posts.isPublished, isFeatured: posts.isFeatured, featuredOrder: posts.featuredOrder, isHighlighted: posts.isHighlighted, highlightOrder: posts.highlightOrder, category: { name: postCategories.name, slug: postCategories.slug } }).from(posts).leftJoin(postCategories, eq(posts.categoryId, postCategories.id)).where(where).orderBy(...order).limit(query.limit).offset((query.page - 1) * query.limit),
       db.select({ value: count() }).from(posts).leftJoin(postCategories, eq(posts.categoryId, postCategories.id)).where(where),
     ]);
     return apiSuccess(data, undefined, { page: query.page, limit: query.limit, total: totalResult[0]?.value ?? 0 });

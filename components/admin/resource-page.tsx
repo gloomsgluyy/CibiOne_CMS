@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export type ResourceItem = { id: number; title?: string; name?: string; position?: string | null; isPublished?: boolean; sortOrder?: number; category?: { name?: string } | null; websiteUrl?: string | null; presentationSlot?: string };
+export type ResourceItem = { id: number; title?: string; name?: string; type?: string; position?: string | null; isPublished?: boolean; sortOrder?: number; category?: { name?: string } | null; websiteUrl?: string | null; presentationSlot?: string };
 export type ResourceConfig = { title: string; description: string; resource: string; createHref: string; editPrefix: string; columns: string[]; fields: (item: ResourceItem) => React.ReactNode[] };
 
 async function request(url: string, init?: RequestInit) {

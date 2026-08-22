@@ -27,5 +27,5 @@ function ContentAnalytics() {
 }
 
 export default function ContentPage() {
-  return <ResourcePage config={{ title: "Konten", description: "Kelola berita, pengumuman, prestasi, dan agenda.", resource: "posts", createHref: "/admin/konten/baru", editPrefix: "/admin/konten", columns: ["Konten", "Tipe", "Kategori", "Status"], fields: (item) => [<span className="font-semibold">{item.title}</span>, <Badge variant="outline">Konten</Badge>, <span className="text-slate-500">{item.category?.name ?? "Tanpa kategori"}</span>, <StatusBadge published={item.isPublished} />] }}><ContentAnalytics /></ResourcePage>;
+  return <ResourcePage config={{ title: "Konten", description: "Kelola berita, pengumuman, prestasi, dan agenda.", resource: "posts", createHref: "/admin/konten/baru", editPrefix: "/admin/konten", columns: ["Konten", "Tipe", "Kategori", "Status"], fields: (item) => [<span className="font-semibold">{item.title}</span>, <Badge variant="outline">{item.type ?? "Konten"}</Badge>, <span className="text-slate-500">{item.category?.name ?? "Tanpa kategori"}</span>, <StatusBadge published={item.isPublished} />] }}><ContentAnalytics /></ResourcePage>;
 }
