@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 type Kind = "posts" | "guru" | "sarana-prasarana" | "kerjasama-industri";
 const titles = { posts: "Konten", guru: "Guru & Staff", "sarana-prasarana": "Sarana & Prasarana", "kerjasama-industri": "Mitra Industri" } as const;
-async function request(url: string, init?: RequestInit) { const response = await fetch(url, { ...init, headers: { "Content-Type": "application/json", ...init?.headers } }); const result = await response.json(); if (!response.ok || !result.success) throw new Error(result.error?.message ?? "Permintaan gagal."); return result.data; }
+async function request(url: string, init?: RequestInit) { const headers = new Headers(init?.headers); if (!(init?.body instanceof FormData)) headers.set("Content-Type", "application/json"); const response = await fetch(url, { ...init, headers }); const result = await response.json(); if (!response.ok || !result.success) throw new Error(result.error?.message ?? "Permintaan gagal."); return result.data; }
 
 export function EditorPage({ kind, id }: { kind: Kind; id?: string }) {
   const router = useRouter(); const [form, setForm] = useState<Record<string, unknown>>({ isPublished: false, sortOrder: 0, type: "berita", presentationSlot: "standard", galleryUrls: [] }); const [error, setError] = useState(""); const [pending, setPending] = useState(false); const [uploading, setUploading] = useState(false);
