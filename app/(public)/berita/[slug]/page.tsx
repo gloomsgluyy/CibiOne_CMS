@@ -4,7 +4,9 @@ import { BeritaDetailClient } from "@/components/sections/berita/berita-detail-c
 import { getPublicPostBySlug, getPublicPosts } from "@/server/queries/public-content";
 
 function formatDate(value: Date | null) {
-  return value ? new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(value) : "";
+  if (!value) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(date);
 }
 
 export default async function BeritaDetailPage({ params }: { params: Promise<{ slug: string }> }) {

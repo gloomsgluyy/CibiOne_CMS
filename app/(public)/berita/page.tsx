@@ -2,7 +2,9 @@ import { BeritaSection } from "@/components/sections/berita/berita-section";
 import { getPublicPosts } from "@/server/queries/public-content";
 
 function toDate(value: Date | null) {
-  return value ? new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(value) : "";
+  if (!value) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(date);
 }
 
 export default async function BeritaPage() {
